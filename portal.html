@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFSoluciones | Portal Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --surface: #111827;
+            --surface2: #1a2236;
+            --border: #1e2d45;
+            --accent: #00d4ff;
+            --accent2: #7c3aed;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --font: 'IBM Plex Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: var(--font-mono);
+            letter-spacing: -0.5px;
+        }
+
+        .logo span { color: var(--text); }
+        .logo p { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--font-mono); }
+
+        .nav { flex: 1; padding: 16px 12px; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover { background: var(--surface2); color: var(--text); }
+        .nav-item.active { background: rgba(0, 212, 255, 0.1); color: var(--accent); border: 1px solid rgba(0, 212, 255, 0.2); }
+        .nav-item i { width: 16px; text-align: center; }
+
+        .nav-section {
+            font-size: 10px;
+            font-family: var(--font-mono);
+            color: var(--muted);
+            padding: 8px 12px 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--surface2);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .user-info .name { font-size: 13px; font-weight: 600; }
+        .user-info .role { font-size: 11px; color: var(--muted); }
+
+        .logout-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--red);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: var(--font);
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
+
+        /* MAIN */
+        .main {
+            margin-left: 240px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-title { font-size: 20px; font-weight: 700; }
+        .page-subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+        .topbar-actions { display: flex; gap: 10px; }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: var(--font);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-primary:hover { background: #00b8d9; }
+        .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-danger { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+        .btn-danger:hover { background: rgba(239,68,68,0.2); }
+        .btn-success { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+        .btn-success:hover { background: rgba(16,185,129,0.2); }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+        .content { padding: 32px; flex: 1; }
+
+        /* SECTIONS */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+        }
+
+        .stat-card.blue::before { background: var(--accent); }
+        .stat-card.purple::before { background: var(--accent2); }
+        .stat-card.green::before { background: var(--green); }
+        .stat-card.yellow::before { background: var(--yellow); }
+
+        .stat-label { font-size: 12px; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 32px; font-weight: 700; margin: 8px 0 4px; font-family: var(--font-mono); }
+        .stat-icon { position: absolute; right: 20px; top: 20px; font-size: 24px; opacity: 0.2; }
+
+        /* TABLE */
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-title { font-size: 15px; font-weight: 600; }
+        .table-count { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+
+        .search-input {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 7px 12px 7px 32px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: var(--font);
+            width: 220px;
+            position: relative;
+        }
+
+        .search-wrapper { position: relative; }
+        .search-wrapper i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 12px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--surface2); }
+        th { padding: 10px 16px; text-align: left; font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 600; }
+        td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+
+        .badge-green { background: rgba(16,185,129,0.15); color: var(--green); }
+        .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+        .badge-blue { background: rgba(0,212,255,0.15); color: var(--accent); }
+        .badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
+
+        .actions { display: flex; gap: 6px; }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title { font-size: 16px; font-weight: 700; }
+        .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; }
+        .modal-close:hover { color: var(--text); }
+
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-label { font-size: 12px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+
+        .form-input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: var(--font);
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus { outline: none; border-color: var(--accent); }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            z-index: 300;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            min-width: 280px;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left: 3px solid var(--green); }
+        .toast.error { border-left: 3px solid var(--red); }
+
+        /* LOADING */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            color: var(--muted);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--muted);
+        }
+
+        .empty-state i { font-size: 40px; margin-bottom: 12px; opacity: 0.3; display: block; }
+        .empty-state p { font-size: 14px; }
+
+        select.form-input option { background: var(--surface2); }
+
+        .confirm-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+        .confirm-name { color: var(--text); font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="logo">
+        <h1>MF<span>Soluciones</span></h1>
+        <p>// panel de control</p>
+    </div>
+    <nav class="nav">
+        <div class="nav-section">Principal</div>
+        <button class="nav-item active" onclick="showSection('dashboard')">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </button>
+        <div class="nav-section">Gestión</div>
+        <button class="nav-item" onclick="showSection('socios')">
+            <i class="fas fa-users"></i> Socios
+        </button>
+        <button class="nav-item" onclick="showSection('hardware')">
+            <i class="fas fa-microchip"></i> Hardware
+        </button>
+        <button class="nav-item" onclick="showSection('ofertas')">
+            <i class="fas fa-tags"></i> Ofertas
+        </button>
+        <button class="nav-item" onclick="showSection('flujos')">
+            <i class="fas fa-project-diagram"></i> Flujos
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="avatar" id="avatarInitial">M</div>
+            <div>
+                <div class="name" id="userName">Mariano</div>
+                <div class="role">Administrador</div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+        </button>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="topbar">
+        <div>
+            <div class="page-title" id="pageTitle">Dashboard</div>
+            <div class="page-subtitle" id="pageSubtitle">Resumen general del sistema</div>
+        </div>
+        <div class="topbar-actions" id="topbarActions"></div>
+    </div>
+
+    <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="section active" id="section-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-label">Socios</div>
+                    <div class="stat-value" id="stat-socios">—</div>
+                    <i class="fas fa-users stat-icon"></i>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-label">Hardware</div>
+                    <div class="stat-value" id="stat-hardware">—</div>
+                    <i class="fas fa-microchip stat-icon"></i>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">Ofertas</div>
+                    <div class="stat-value" id="stat-ofertas">—</div>
+                    <i class="fas fa-tags stat-icon"></i>
+                </div>
+                <div class="stat-card yellow">
+                    <div class="stat-label">Flujos</div>
+                    <div class="stat-value" id="stat-flujos">—</div>
+                    <i class="fas fa-project-diagram stat-icon"></i>
+                </div>
+            </div>
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <div class="table-title">Últimos socios registrados</div>
+                    </div>
+                </div>
+                <div id="dashboard-socios-table"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+            </div>
+        </div>
+
+        <!-- SOCIOS -->
+        <div class="section" id="section-socios">
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <div class="table-title">Socios</div>
+                        <div class="table-count" id="socios-count">cargando...</div>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <div class="search-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="search-input" placeholder="Buscar socio..." oninput="filterTable('socios-tbody', this.value)">
+                        </div>
+                    </div>
+                </div>
+                <div id="socios-table"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+            </div>
+        </div>
+
+        <!-- HARDWARE -->
+        <div class="section" id="section-hardware">
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <div class="table-title">Hardware</div>
+                        <div class="table-count" id="hardware-count">cargando...</div>
+                    </div>
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="search-input" placeholder="Buscar componente..." oninput="filterTable('hardware-tbody', this.value)">
+                    </div>
+                </div>
+                <div id="hardware-table"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+            </div>
+        </div>
+
+        <!-- OFERTAS -->
+        <div class="section" id="section-ofertas">
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <div class="table-title">Ofertas y Servicios</div>
+                        <div class="table-count" id="ofertas-count">cargando...</div>
+                    </div>
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="search-input" placeholder="Buscar oferta..." oninput="filterTable('ofertas-tbody', this.value)">
+                    </div>
+                </div>
+                <div id="ofertas-table"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+            </div>
+        </div>
+
+        <!-- FLUJOS -->
+        <div class="section" id="section-flujos">
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <div class="table-title">Flujos n8n</div>
+                        <div class="table-count" id="flujos-count">cargando...</div>
+                    </div>
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="search-input" placeholder="Buscar flujo..." oninput="filterTable('flujos-tbody', this.value)">
+                    </div>
+                </div>
+                <div id="flujos-table"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL GENÉRICO -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-title">Modal</div>
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+        <div class="modal-footer" id="modal-footer"></div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle" id="toast-icon"></i>
+    <span id="toast-msg"></span>
+</div>
+
+<script>
+const API = 'https://directive-itunes-scott-study.trycloudflare.com';
+
+// Recuperar nombre del sessionStorage
+const nombre = sessionStorage.getItem('nombre') || 'Admin';
+document.getElementById('userName').textContent = nombre.split(' ')[0];
+document.getElementById('avatarInitial').textContent = nombre.charAt(0).toUpperCase();
+
+// TOAST
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    const icon = document.getElementById('toast-icon');
+    document.getElementById('toast-msg').textContent = msg;
+    t.className = `toast ${type} show`;
+    icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+    setTimeout(() => t.className = 'toast', 3000);
+}
+
+// MODAL
+function openModal(title, body, footer) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').innerHTML = body;
+    document.getElementById('modal-footer').innerHTML = footer;
+    document.getElementById('modal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+}
+
+// NAVIGATION
+const sections = {
+    dashboard: { title: 'Dashboard', subtitle: 'Resumen general del sistema' },
+    socios: { title: 'Socios', subtitle: 'Gestión de socios registrados' },
+    hardware: { title: 'Hardware', subtitle: 'Inventario de componentes' },
+    ofertas: { title: 'Ofertas y Servicios', subtitle: 'Gestión de ofertas activas' },
+    flujos: { title: 'Flujos n8n', subtitle: 'Automatizaciones configuradas' },
+};
+
+function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(`section-${name}`).classList.add('active');
+    document.querySelector(`[onclick="showSection('${name}')"]`).classList.add('active');
+    document.getElementById('pageTitle').textContent = sections[name].title;
+    document.getElementById('pageSubtitle').textContent = sections[name].subtitle;
+
+    // Botón agregar
+    const actions = document.getElementById('topbarActions');
+    actions.innerHTML = '';
+    if (name !== 'dashboard') {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-primary';
+        btn.innerHTML = `<i class="fas fa-plus"></i> Agregar`;
+        btn.onclick = () => openAddModal(name);
+        actions.appendChild(btn);
+    }
+
+    loadSection(name);
+}
+
+// SEARCH FILTER
+function filterTable(tbodyId, query) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(query.toLowerCase()) ? '' : 'none';
+    });
+}
+
+// LOGOUT
+function logout() {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+}
+
+// LOAD SECTIONS
+async function loadSection(name) {
+    if (name === 'dashboard') { loadDashboard(); return; }
+    await loadTable(name);
+}
+
+async function apiFetch(path, opts = {}) {
+    const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+    return res.json();
+}
+
+// DASHBOARD
+async function loadDashboard() {
+    try {
+        const [socios, hardware, ofertas, flujos] = await Promise.all([
+            apiFetch('/socios'), apiFetch('/hardware'), apiFetch('/ofertas'), apiFetch('/flujos')
+        ]);
+        document.getElementById('stat-socios').textContent = socios.length;
+        document.getElementById('stat-hardware').textContent = hardware.length;
+        document.getElementById('stat-ofertas').textContent = ofertas.length;
+        document.getElementById('stat-flujos').textContent = flujos.length;
+
+        const recent = socios.slice(0, 5);
+        document.getElementById('dashboard-socios-table').innerHTML = `
+            <table>
+                <thead><tr><th>Socio #</th><th>Nombre</th><th>Entidad</th><th>Legajo</th><th>CRA</th></tr></thead>
+                <tbody>${recent.map(s => `
+                    <tr>
+                        <td><span class="badge badge-blue">${s.socio}</span></td>
+                        <td>${s.nombre || '—'}</td>
+                        <td>${s.entidad || '—'}</td>
+                        <td>${s.nro_legajo || '—'}</td>
+                        <td><span class="badge ${s.cra === 'SI' ? 'badge-green' : 'badge-red'}">${s.cra || '—'}</span></td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>`;
+    } catch(e) {
+        document.getElementById('dashboard-socios-table').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error cargando datos</p></div>';
+    }
+}
+
+// SOCIOS
+async function loadTable(name) {
+    const containers = {
+        socios: 'socios-table', hardware: 'hardware-table',
+        ofertas: 'ofertas-table', flujos: 'flujos-table'
+    };
+    const container = document.getElementById(containers[name]);
+    container.innerHTML = '<div class="loading"><div class="spinner"></div> Cargando...</div>';
+
+    try {
+        const data = await apiFetch(`/${name}`);
+        document.getElementById(`${name}-count`).textContent = `${data.length} registros`;
+        container.innerHTML = renderTable(name, data);
+    } catch(e) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error cargando datos</p></div>';
+    }
+}
+
+function renderTable(name, data) {
+    if (!data.length) return '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay registros</p></div>';
+
+    const configs = {
+        socios: {
+            headers: ['#Socio', 'Nombre', 'Documento', 'Entidad', 'Legajo', 'CRA', 'Sepelio', 'Salud', 'Móvil', 'Acciones'],
+            row: s => `<td><span class="badge badge-blue">${s.socio}</span></td>
+                <td>${s.nombre||'—'}</td><td>${s.documento||'—'}</td><td>${s.entidad||'—'}</td>
+                <td>${s.nro_legajo||'—'}</td>
+                <td><span class="badge ${s.cra==='SI'?'badge-green':'badge-red'}">${s.cra||'—'}</span></td>
+                <td><span class="badge ${s.sepelio==='SI'?'badge-green':'badge-red'}">${s.sepelio||'—'}</span></td>
+                <td><span class="badge ${s.salud==='SI'?'badge-green':'badge-red'}">${s.salud||'—'}</span></td>
+                <td>${s.movil||'—'}</td>
+                <td><div class="actions">
+                    <button class="btn btn-secondary btn-sm" onclick='openEditModal("socios",${JSON.stringify(s)})'><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick='confirmDelete("socios","${s.socio}","${s.nombre}")'><i class="fas fa-trash"></i></button>
+                </div></td>`,
+            key: s => s.socio
+        },
+        hardware: {
+            headers: ['ID', 'Componente', 'Detalle', 'Fecha Instalación', 'Acciones'],
+            row: s => `<td><span class="badge badge-blue">${s.id}</span></td>
+                <td>${s.componente||'—'}</td><td>${s.detalle||'—'}</td><td>${s.fecha_instalacion||'—'}</td>
+                <td><div class="actions">
+                    <button class="btn btn-secondary btn-sm" onclick='openEditModal("hardware",${JSON.stringify(s)})'><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick='confirmDelete("hardware","${s.id}","${s.componente}")'><i class="fas fa-trash"></i></button>
+                </div></td>`,
+            key: s => s.id
+        },
+        ofertas: {
+            headers: ['ID', 'Servicio', 'Oferta', 'Expiración', 'Acciones'],
+            row: s => `<td><span class="badge badge-blue">${s.id}</span></td>
+                <td>${s.servicio_nombre||'—'}</td><td>${s.oferta_texto||'—'}</td>
+                <td><span class="badge ${isExpired(s.fecha_expiracion)?'badge-red':'badge-green'}">${s.fecha_expiracion||'—'}</span></td>
+                <td><div class="actions">
+                    <button class="btn btn-secondary btn-sm" onclick='openEditModal("ofertas",${JSON.stringify(s)})'><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick='confirmDelete("ofertas","${s.id}","${s.servicio_nombre}")'><i class="fas fa-trash"></i></button>
+                </div></td>`,
+            key: s => s.id
+        },
+        flujos: {
+            headers: ['ID', 'Nombre', 'Descripción', 'Precio', 'Acciones'],
+            row: s => `<td><span class="badge badge-blue">${s.id}</span></td>
+                <td>${s.nombre||'—'}</td><td>${s.descripcion||'—'}</td>
+                <td><span class="badge badge-green">$${s.precio||'0'}</span></td>
+                <td><div class="actions">
+                    <button class="btn btn-secondary btn-sm" onclick='openEditModal("flujos",${JSON.stringify(s)})'><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick='confirmDelete("flujos","${s.id}","${s.nombre}")'><i class="fas fa-trash"></i></button>
+                </div></td>`,
+            key: s => s.id
+        }
+    };
+
+    const cfg = configs[name];
+    const tbodyId = `${name}-tbody`;
+    return `<table>
+        <thead><tr>${cfg.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody id="${tbodyId}">${data.map(s=>`<tr>${cfg.row(s)}</tr>`).join('')}</tbody>
+    </table>`;
+}
+
+function isExpired(date) {
+    if (!date) return false;
+    return new Date(date) < new Date();
+}
+
+// ADD MODAL
+function openAddModal(name) {
+    const forms = {
+        socios: `
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Nro Socio</label><input class="form-input" id="f-socio" type="number"></div>
+                <div class="form-group"><label class="form-label">Nro Legajo</label><input class="form-input" id="f-nro_legajo" type="number"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" id="f-nombre"></div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Documento</label><input class="form-input" id="f-documento" type="number"></div>
+                <div class="form-group"><label class="form-label">Entidad</label><input class="form-input" id="f-entidad"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Móvil</label><input class="form-input" id="f-movil"></div>
+                <div class="form-group"><label class="form-label">Correo</label><input class="form-input" id="f-correo" type="email"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">CRA</label><select class="form-input" id="f-cra"><option value="SI">SI</option><option value="NO">NO</option></select></div>
+                <div class="form-group"><label class="form-label">Sepelio</label><select class="form-input" id="f-sepelio"><option value="SI">SI</option><option value="NO">NO</option></select></div>
+            </div>
+            <div class="form-group"><label class="form-label">Salud</label><select class="form-input" id="f-salud"><option value="SI">SI</option><option value="NO">NO</option></select></div>`,
+        hardware: `
+            <div class="form-group"><label class="form-label">Componente</label><input class="form-input" id="f-componente"></div>
+            <div class="form-group"><label class="form-label">Detalle</label><input class="form-input" id="f-detalle"></div>
+            <div class="form-group"><label class="form-label">Fecha Instalación</label><input class="form-input" id="f-fecha_instalacion" type="date"></div>`,
+        ofertas: `
+            <div class="form-group"><label class="form-label">Nombre del servicio</label><input class="form-input" id="f-servicio_nombre"></div>
+            <div class="form-group"><label class="form-label">Texto de la oferta</label><input class="form-input" id="f-oferta_texto"></div>
+            <div class="form-group"><label class="form-label">Fecha de expiración</label><input class="form-input" id="f-fecha_expiracion" type="date"></div>`,
+        flujos: `
+            <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="f-nombre"></div>
+            <div class="form-group"><label class="form-label">Descripción</label><input class="form-input" id="f-descripcion"></div>
+            <div class="form-group"><label class="form-label">Precio</label><input class="form-input" id="f-precio" type="number" step="0.01"></div>
+            <div class="form-group"><label class="form-label">Archivo JSON path</label><input class="form-input" id="f-archivo_json_path"></div>`
+    };
+
+    openModal(`Agregar ${sections[name].title}`, forms[name], `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="submitAdd('${name}')"><i class="fas fa-save"></i> Guardar</button>
+    `);
+}
+
+async function submitAdd(name) {
+    const fields = {
+        socios: ['socio','nombre','documento','entidad','nro_legajo','cra','sepelio','salud','movil','correo'],
+        hardware: ['componente','detalle','fecha_instalacion'],
+        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion'],
+        flujos: ['nombre','descripcion','precio','archivo_json_path']
+    };
+
+    const data = {};
+    fields[name].forEach(f => {
+        const el = document.getElementById(`f-${f}`);
+        if (el) data[f] = el.value || null;
+    });
+
+    try {
+        await apiFetch(`/${name}`, { method: 'POST', body: JSON.stringify(data) });
+        closeModal();
+        showToast('Registro agregado correctamente');
+        loadTable(name);
+    } catch(e) {
+        showToast('Error al guardar', 'error');
+    }
+}
+
+// EDIT MODAL
+function openEditModal(name, record) {
+    const fields = {
+        socios: ['nombre','documento','entidad','nro_legajo','cra','sepelio','salud','movil','correo'],
+        hardware: ['componente','detalle','fecha_instalacion'],
+        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion'],
+        flujos: ['nombre','descripcion','precio','archivo_json_path']
+    };
+
+    const keys = { socios: 'socio', hardware: 'id', ofertas: 'id', flujos: 'id' };
+    const key = keys[name];
+
+    const form = fields[name].map(f => {
+        const isSelect = ['cra','sepelio','salud'].includes(f);
+        const isDate = f.includes('fecha');
+        const val = record[f] || '';
+        if (isSelect) return `<div class="form-group"><label class="form-label">${f.toUpperCase()}</label>
+            <select class="form-input" id="e-${f}">
+                <option value="SI" ${val==='SI'?'selected':''}>SI</option>
+                <option value="NO" ${val==='NO'?'selected':''}>NO</option>
+            </select></div>`;
+        return `<div class="form-group"><label class="form-label">${f.replace(/_/g,' ').toUpperCase()}</label>
+            <input class="form-input" id="e-${f}" type="${isDate?'date':'text'}" value="${val}"></div>`;
+    }).join('');
+
+    openModal(`Editar registro`, form, `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick='submitEdit("${name}","${record[key]}")'><i class="fas fa-save"></i> Guardar</button>
+    `);
+}
+
+async function submitEdit(name, id) {
+    const fields = {
+        socios: ['nombre','documento','entidad','nro_legajo','cra','sepelio','salud','movil','correo'],
+        hardware: ['componente','detalle','fecha_instalacion'],
+        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion'],
+        flujos: ['nombre','descripcion','precio','archivo_json_path']
+    };
+
+    const data = {};
+    fields[name].forEach(f => {
+        const el = document.getElementById(`e-${f}`);
+        if (el) data[f] = el.value || null;
+    });
+
+    try {
+        await apiFetch(`/${name}/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+        closeModal();
+        showToast('Registro actualizado');
+        loadTable(name);
+    } catch(e) {
+        showToast('Error al actualizar', 'error');
+    }
+}
+
+// DELETE
+function confirmDelete(name, id, label) {
+    openModal('Confirmar eliminación', `
+        <p class="confirm-text">¿Estás seguro que querés eliminar <span class="confirm-name">${label}</span>?<br>Esta acción no se puede deshacer.</p>
+    `, `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-danger" onclick='submitDelete("${name}","${id}")'><i class="fas fa-trash"></i> Eliminar</button>
+    `);
+}
+
+async function submitDelete(name, id) {
+    try {
+        await apiFetch(`/${name}/${id}`, { method: 'DELETE' });
+        closeModal();
+        showToast('Registro eliminado');
+        loadTable(name);
+    } catch(e) {
+        showToast('Error al eliminar', 'error');
+    }
+}
+
+// INIT
+loadDashboard();
+</script>
+</body>
+</html>
