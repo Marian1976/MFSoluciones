@@ -86,10 +86,10 @@
             if (user && pass) {
                 try {
                     // Llamada a tu backend local que conecta con MySQL
-                    const response = await fetch('https://directive-itunes-scott-study.trycloudflare.com/login, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ usuario: user, password: pass })
+                   const response = await fetch('https://directive-itunes-scott-study.trycloudflare.com/login', {
+                   method: 'POST',
+                   headers: { 'Content-Type': 'application/json' },
+                   body: JSON.stringify({ usuario: user, password: pass })
                     });
 
                     const result = await response.json();
