@@ -30,6 +30,7 @@
             min-height: 100vh;
         }
 
+        /* ── SIDEBAR ── */
         .sidebar {
             width: 240px;
             background: var(--surface);
@@ -37,6 +38,7 @@
             position: fixed;
             height: 100vh;
             padding: 24px 20px;
+            z-index: 100;
         }
 
         .logo h1 {
@@ -61,12 +63,14 @@
         .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
         .nav-item.active { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
 
+        /* ── MAIN ── */
         .main { margin-left: 240px; flex: 1; padding: 40px; }
 
         .header { margin-bottom: 40px; }
         .header h2 { font-size: 24px; font-weight: 700; }
         .header p { color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
 
+        /* ── GRID ── */
         .offers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -122,11 +126,66 @@
 
         .loading { text-align: center; padding: 50px; color: var(--muted); }
         .error { text-align: center; padding: 50px; color: #f87171; font-family: var(--font-mono); font-size: 13px; }
+
+        /* ── HAMBURGUESA (solo móvil) ── */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 200;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 13px;
+            cursor: pointer;
+            color: var(--accent);
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* ── OVERLAY ── */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 90;
+        }
+        .overlay.active { display: block; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.28s ease;
+            }
+            .sidebar.open { transform: translateX(0); }
+
+            .main {
+                margin-left: 0;
+                padding: 70px 16px 32px;
+            }
+
+            .offers-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
+<!-- Botón hamburguesa -->
+<button class="hamburger" id="menuBtn" aria-label="Abrir menú">
+    <i class="fas fa-bars" id="menuIcon"></i>
+</button>
+
+<!-- Overlay oscuro -->
+<div class="overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
     <div class="logo">
         <h1>MF<span>Soluciones</span></h1>
     </div>
@@ -151,6 +210,29 @@
 </div>
 
 <script>
+    // ── Menú hamburguesa ──
+    const menuBtn  = document.getElementById('menuBtn');
+    const sidebar  = document.getElementById('sidebar');
+    const overlay  = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+
+    function toggleMenu() {
+        const open = sidebar.classList.toggle('open');
+        overlay.classList.toggle('active', open);
+        menuIcon.className = open ? 'fas fa-times' : 'fas fa-bars';
+    }
+
+    menuBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    // Cerrar menú al tocar un link
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', () => {
+            if (sidebar.classList.contains('open')) toggleMenu();
+        });
+    });
+
+    // ── API ──
     const API_BASE_URL = 'https://buried-revision-opera-waiting.trycloudflare.com';
     const ASSETS_URL   = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
     const FALLBACK_IMG = ASSETS_URL + 'oferta_default.jpg';
