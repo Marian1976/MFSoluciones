@@ -58,10 +58,11 @@
             border-radius: 8px;
         }
 
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
         .nav-item.active { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
 
         .main { margin-left: 240px; flex: 1; padding: 40px; }
-        
+
         .header { margin-bottom: 40px; }
         .header h2 { font-size: 24px; font-weight: 700; }
         .header p { color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
@@ -100,10 +101,10 @@
 
         .offer-content { padding: 20px; }
         .offer-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; min-height: 40px; }
-        .offer-price { 
-            font-family: var(--font-mono); 
-            font-size: 20px; 
-            color: var(--green); 
+        .offer-price {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            color: var(--green);
             font-weight: 700;
             margin-bottom: 12px;
         }
@@ -120,6 +121,7 @@
         }
 
         .loading { text-align: center; padding: 50px; color: var(--muted); }
+        .error { text-align: center; padding: 50px; color: #f87171; font-family: var(--font-mono); font-size: 13px; }
     </style>
 </head>
 <body>
@@ -145,56 +147,59 @@
         <i class="fas fa-spinner fa-spin"></i> Conectando con la base de datos...
     </div>
 
-    <div class="offers-grid" id="offers-container">
-        <!-- Las ofertas se inyectan aquí -->
-    </div>
+    <div class="offers-grid" id="offers-container"></div>
 </div>
 
 <script>
-    // CAMBIA ESTA URL SI TU CLOUDFLARE CAMBIÓ
     const API_BASE_URL = 'https://buried-revision-opera-waiting.trycloudflare.com';
-    
-    // Como las fotos están en la RAÍZ de tu GitHub, dejamos esto vacío[cite: 1]
-    const ASSETS_URL = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
+    const ASSETS_URL   = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
+    const FALLBACK_IMG = ASSETS_URL + 'oferta_default.jpg';
 
     async function fetchOfertas() {
+        const loading   = document.getElementById('loading');
+        const container = document.getElementById('offers-container');
+
         try {
             const response = await fetch(`${API_BASE_URL}/ofertas`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
-            
-            const container = document.getElementById('offers-container');
-            const loading = document.getElementById('loading');
-            
+
             loading.style.display = 'none';
-            container.innerHTML = ''; // Limpiar antes de cargar
+            container.innerHTML = '';
 
             data.forEach(item => {
+                const imgSrc = item.imagen
+                    ? ASSETS_URL + item.imagen
+                    : FALLBACK_IMG;
+
                 const card = document.createElement('div');
                 card.className = 'offer-card';
-                
-                // PRIORIDAD: 
-                // 1. Nombre de imagen en la base de datos (columna 'imagen')
-                // 2. Imagen genérica si el campo está vacío[cite: 1]
-                const imgName = item.imagen || 'oferta_default.jpg';
-
                 card.innerHTML = `
                     <div class="offer-img">
-                        <img src="${ASSETS_URL}${imgName}" alt="Imagen Oferta" onerror="this.src='oferta_default.jpg'">
+                        <img
+                            src="${imgSrc}"
+                            alt="Imagen Oferta"
+                            loading="eager"
+                            crossorigin="anonymous"
+                            onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
+                        >
                     </div>
                     <div class="offer-content">
-                        <span class="badge">${item.servicio_nombre || 'PC GAMER'}</span>
+                        <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
                         <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
                         <div class="offer-price">$${item.precio || '0.00'}</div>
-                        <p style="font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono';">
+                        <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
                             Expira: ${item.fecha_expiracion || 'Consultar'}
                         </p>
                     </div>
                 `;
                 container.appendChild(card);
             });
+
         } catch (error) {
-            console.error("Error:", error);
-            document.getElementById('loading').innerHTML = "Error al conectar con la API local.";
+            console.error('Error al cargar ofertas:', error);
+            loading.className = 'error';
+            loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar con la API.<br><small>${error.message}</small>`;
         }
     }
 
