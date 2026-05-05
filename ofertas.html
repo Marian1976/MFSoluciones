@@ -30,7 +30,6 @@
             min-height: 100vh;
         }
 
-        /* SIDEBAR ESTILO ADMIN */
         .sidebar {
             width: 240px;
             background: var(--surface);
@@ -61,14 +60,12 @@
 
         .nav-item.active { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
 
-        /* MAIN CONTENT */
         .main { margin-left: 240px; flex: 1; padding: 40px; }
         
         .header { margin-bottom: 40px; }
         .header h2 { font-size: 24px; font-weight: 700; }
         .header p { color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
 
-        /* GRID DE OFERTAS */
         .offers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -102,8 +99,7 @@
         }
 
         .offer-content { padding: 20px; }
-        
-        .offer-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .offer-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; min-height: 40px; }
         .offer-price { 
             font-family: var(--font-mono); 
             font-size: 20px; 
@@ -119,9 +115,10 @@
             border-radius: 4px;
             font-size: 11px;
             font-family: var(--font-mono);
+            display: inline-block;
+            margin-bottom: 8px;
         }
 
-        /* LOADING SPINNER */
         .loading { text-align: center; padding: 50px; color: var(--muted); }
     </style>
 </head>
@@ -132,8 +129,8 @@
         <h1>MF<span>Soluciones</span></h1>
     </div>
     <nav>
-        <a href="#" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
-        <a href="#" class="nav-item active"><i class="fas fa-tags"></i> Ofertas</a>
+        <a href="index.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="ofertas.html" class="nav-item active"><i class="fas fa-tags"></i> Ofertas</a>
         <a href="#" class="nav-item"><i class="fas fa-microchip"></i> Hardware</a>
     </nav>
 </div>
@@ -154,8 +151,10 @@
 </div>
 
 <script>
+    // CAMBIA ESTA URL SI TU CLOUDFLARE CAMBIÓ
     const API_BASE_URL = 'https://buried-revision-opera-waiting.trycloudflare.com';
-    // Ruta relativa a tu carpeta de activos
+    
+    // Como las fotos están en la RAÍZ de tu GitHub, dejamos esto vacío[cite: 1]
     const ASSETS_URL = ''; 
 
     async function fetchOfertas() {
@@ -167,35 +166,38 @@
             const loading = document.getElementById('loading');
             
             loading.style.display = 'none';
+            container.innerHTML = ''; // Limpiar antes de cargar
 
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'offer-card';
                 
-                // Si en tu base de datos tienes un campo 'imagen', úsalo. 
-                // De lo contrario, usaremos una imagen por defecto de tu carpeta assets.
+                // PRIORIDAD: 
+                // 1. Nombre de imagen en la base de datos (columna 'imagen')
+                // 2. Imagen genérica si el campo está vacío[cite: 1]
                 const imgName = item.imagen || 'oferta_default.jpg';
 
                 card.innerHTML = `
                     <div class="offer-img">
-                        <img src="${ASSETS_URL}${imgName}" alt="Imagen Oferta">
+                        <img src="${ASSETS_URL}${imgName}" alt="Imagen Oferta" onerror="this.src='oferta_default.jpg'">
                     </div>
                     <div class="offer-content">
-                        <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
+                        <span class="badge">${item.servicio_nombre || 'PC GAMER'}</span>
                         <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
                         <div class="offer-price">$${item.precio || '0.00'}</div>
-                        <p style="font-size: 12px; color: var(--muted);">Expira: ${item.fecha_expiracion || 'N/A'}</p>
+                        <p style="font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono';">
+                            Expira: ${item.fecha_expiracion || 'Consultar'}
+                        </p>
                     </div>
                 `;
                 container.appendChild(card);
             });
         } catch (error) {
             console.error("Error:", error);
-            document.getElementById('loading').innerHTML = "Error al conectar con la API.";
+            document.getElementById('loading').innerHTML = "Error al conectar con la API local.";
         }
     }
 
-    // Iniciar carga
     window.onload = fetchOfertas;
 </script>
 
