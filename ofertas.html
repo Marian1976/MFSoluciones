@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MF Soluciones | Ofertas</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --surface: #111827;
+            --surface2: #1a2236;
+            --border: #1e2d45;
+            --accent: #00d4ff;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --green: #10b981;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --font: 'IBM Plex Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR ESTILO ADMIN */
+        .sidebar {
+            width: 240px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            padding: 24px 20px;
+        }
+
+        .logo h1 {
+            font-size: 18px;
+            color: var(--accent);
+            font-family: var(--font-mono);
+            margin-bottom: 30px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+            border-radius: 8px;
+        }
+
+        .nav-item.active { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
+
+        /* MAIN CONTENT */
+        .main { margin-left: 240px; flex: 1; padding: 40px; }
+        
+        .header { margin-bottom: 40px; }
+        .header h2 { font-size: 24px; font-weight: 700; }
+        .header p { color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
+
+        /* GRID DE OFERTAS */
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .offer-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .offer-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+        .offer-img {
+            width: 100%;
+            height: 180px;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .offer-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .offer-content { padding: 20px; }
+        
+        .offer-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .offer-price { 
+            font-family: var(--font-mono); 
+            font-size: 20px; 
+            color: var(--green); 
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: var(--font-mono);
+        }
+
+        /* LOADING SPINNER */
+        .loading { text-align: center; padding: 50px; color: var(--muted); }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo">
+        <h1>MF<span>Soluciones</span></h1>
+    </div>
+    <nav>
+        <a href="#" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="#" class="nav-item active"><i class="fas fa-tags"></i> Ofertas</a>
+        <a href="#" class="nav-item"><i class="fas fa-microchip"></i> Hardware</a>
+    </nav>
+</div>
+
+<div class="main">
+    <div class="header">
+        <h2>Catálogo de Ofertas</h2>
+        <p>// visualización de servicios activos</p>
+    </div>
+
+    <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Conectando con la base de datos...
+    </div>
+
+    <div class="offers-grid" id="offers-container">
+        <!-- Las ofertas se inyectan aquí -->
+    </div>
+</div>
+
+<script>
+    const API_BASE_URL = 'https://upgrade-plain-programs-defendant.trycloudflare.com';
+    // Ruta relativa a tu carpeta de activos
+    const ASSETS_URL = './assets/'; 
+
+    async function fetchOfertas() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/ofertas`);
+            const data = await response.json();
+            
+            const container = document.getElementById('offers-container');
+            const loading = document.getElementById('loading');
+            
+            loading.style.display = 'none';
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'offer-card';
+                
+                // Si en tu base de datos tienes un campo 'imagen', úsalo. 
+                // De lo contrario, usaremos una imagen por defecto de tu carpeta assets.
+                const imgName = item.imagen || 'oferta_default.jpg';
+
+                card.innerHTML = `
+                    <div class="offer-img">
+                        <img src="${ASSETS_URL}${imgName}" alt="Imagen Oferta">
+                    </div>
+                    <div class="offer-content">
+                        <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
+                        <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
+                        <div class="offer-price">$${item.precio || '0.00'}</div>
+                        <p style="font-size: 12px; color: var(--muted);">Expira: ${item.fecha_expiracion || 'N/A'}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById('loading').innerHTML = "Error al conectar con la API.";
+        }
+    }
+
+    // Iniciar carga
+    window.onload = fetchOfertas;
+</script>
+
+</body>
+</html>
