@@ -209,7 +209,10 @@
     <div class="offers-grid" id="offers-container"></div>
 </div>
 
+<script src="config.js"></script>
 <script>
+    // ► La URL del túnel y los assets se leen desde config.js — no toques este archivo
+
     // ── Menú hamburguesa ──
     const menuBtn  = document.getElementById('menuBtn');
     const sidebar  = document.getElementById('sidebar');
@@ -232,10 +235,7 @@
         });
     });
 
-    // ── API ──
-    const API_BASE_URL = 'https://buried-revision-opera-waiting.trycloudflare.com';
-    const ASSETS_URL   = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
-    const FALLBACK_IMG = ASSETS_URL + 'oferta_default.jpg';
+    // ── API — valores definidos en config.js ──
 
     async function fetchOfertas() {
         const loading   = document.getElementById('loading');
