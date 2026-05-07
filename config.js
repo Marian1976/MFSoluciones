@@ -3,7 +3,7 @@
 //  ► Editá SOLO este archivo para cambiar el túnel
 // ══════════════════════════════════════════════════════
 
-const API_BASE_URL = 'https://boring-yields-theory-hugh.trycloudflare.com';
+const API_BASE_URL = ' https://influences-cycling-reserves-goals.trycloudflare.com';
 
 // Alias usado internamente por portal.html
 const API = API_BASE_URL;
