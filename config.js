@@ -3,7 +3,7 @@
 //  ► Editá SOLO este archivo para cambiar el túnel
 // ══════════════════════════════════════════════════════
 
-const API_BASE_URL = ' https://occupational-productions-yields-periodically.trycloudflare.com';
+const API_BASE_URL = 'https://grande-description-oaks-painted.trycloudflare.com';
 
 // Alias usado internamente por portal.html
 const API = API_BASE_URL;
