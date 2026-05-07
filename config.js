@@ -3,7 +3,7 @@
 //  ► Editá SOLO este archivo para cambiar el túnel
 // ══════════════════════════════════════════════════════
 
-const API_BASE_URL = ' https://influences-cycling-reserves-goals.trycloudflare.com';
+const API_BASE_URL = 'https://eggs-hundred-raised-constitutes.trycloudflare.com';
 
 // Alias usado internamente por portal.html
 const API = API_BASE_URL;
