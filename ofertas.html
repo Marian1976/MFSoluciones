@@ -255,13 +255,12 @@
 
 <script>
     // ======================== CONFIGURACIÓN ========================
-    // Cambiá esta URL si tu backend corre en otro puerto o dominio
     const API_BASE_URL = 'http://localhost:8000';
-    
-    // Imagen de respaldo si la oferta no tiene imagen_url
-    const FALLBACK_IMG = 'https://placehold.co/600x400/0a0e1a/00d4ff?text=MF+Soluciones';
+    const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
+    const DEFAULT_IMAGE = GITHUB_RAW_BASE + 'oferta_default.jpg';  // Imagen por defecto en GitHub
     
     // Datos de ejemplo para modo demostración (sin backend)
+    // Nota: el campo 'imagen' debe coincidir con el nombre del archivo en el repo de GitHub
     const SAMPLE_OFFERS = [
         { 
             id: 1, 
@@ -269,7 +268,7 @@
             oferta_texto: "AMD Ryzen 5 3400G + Motherboard + Cooler", 
             precio: "600000", 
             fecha_expiracion: "2025-12-31",
-            imagen_url: null
+            imagen: "ryzen_3400g.jpg"        // Cambiá por el nombre real que hayas subido a GitHub
         },
         { 
             id: 2, 
@@ -277,7 +276,7 @@
             oferta_texto: "Intel i7 10700K + Motherboard Z490 + 16GB RAM", 
             precio: "850000", 
             fecha_expiracion: "2025-12-31",
-            imagen_url: null
+            imagen: "intel_i7.jpg"
         },
         { 
             id: 3, 
@@ -285,7 +284,7 @@
             oferta_texto: "Notebook Lenovo ThinkPad + Mochila + Mouse", 
             precio: "450000", 
             fecha_expiracion: "2025-12-31",
-            imagen_url: null
+            imagen: "notebook_lenovo.jpg"
         },
         { 
             id: 4, 
@@ -293,11 +292,20 @@
             oferta_texto: 'Monitor 24" Full HD + Teclado Mecánico', 
             precio: "180000", 
             fecha_expiracion: "2025-12-31",
-            imagen_url: null
+            imagen: "monitor_24.jpg"
         }
     ];
 
-    // ======================== ELEMENTOS DOM ========================
+    // ======================== FUNCIONES AUXILIARES ========================
+    // Construye la URL completa de la imagen a partir del nombre guardado en BD
+    function getImageUrl(imagenField) {
+        if (imagenField && typeof imagenField === 'string' && imagenField.trim() !== '') {
+            return GITHUB_RAW_BASE + imagenField.trim();
+        }
+        return DEFAULT_IMAGE;
+    }
+
+    // ======================== DOM ELEMENTS ========================
     const modalDetail = document.getElementById('offerModal');
     const modalForm   = document.getElementById('formModal');
     let selectedOffer = null;
@@ -316,10 +324,10 @@
         modalForm.style.display   = "flex";
     };
 
-    // Abre el modal con los datos de la oferta seleccionada
+    // Abre el modal de detalle con la información de la oferta seleccionada
     function openDetail(offer) {
         selectedOffer = offer;
-        const imgUrl = offer.imagen_url && offer.imagen_url.trim() !== "" ? offer.imagen_url : FALLBACK_IMG;
+        const imgUrl = getImageUrl(offer.imagen);
         document.getElementById('modalImg').src = imgUrl;
         document.getElementById('modalBadge').innerText = offer.servicio_nombre || 'SERVICIO';
         document.getElementById('modalTitle').innerText = offer.oferta_texto || 'Oferta Especial';
@@ -388,8 +396,8 @@
                 ? offer.oferta_texto.substring(0, 50) + '…'
                 : (offer.oferta_texto || 'Sin descripción');
 
-            // Imagen: usar imagen_url si existe, sino fallback
-            const imgSrc = (offer.imagen_url && offer.imagen_url.trim() !== "") ? offer.imagen_url : FALLBACK_IMG;
+            // Obtener URL de la imagen (usando el campo 'imagen' de la BD)
+            const imgUrl = getImageUrl(offer.imagen);
 
             let priceHtml = '<div class="offer-price">Consultar</div>';
             if (offer.precio && offer.precio !== '0') {
@@ -401,7 +409,7 @@
 
             card.innerHTML = `
                 <div class="offer-img">
-                    <img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';">
+                    <img src="${imgUrl}" onerror="this.src='${DEFAULT_IMAGE}';">
                 </div>
                 <div class="offer-content">
                     <span class="badge">${escapeHtml(offer.servicio_nombre || 'SERVICIO')}</span>
@@ -412,7 +420,7 @@
         });
     }
 
-    // Utilidad simple para evitar XSS
+    // Simple escape para prevenir XSS
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -427,7 +435,7 @@
     document.getElementById('orderForm').onsubmit = async (e) => {
         e.preventDefault();
 
-        // Validación amigable de whatsapp: al menos 8 dígitos (puede incluir 54, 549 etc)
+        // Validación de WhatsApp: al menos 8 dígitos
         let rawWhatsapp = document.getElementById('whatsapp').value.trim();
         const digitsOnly = rawWhatsapp.replace(/\D/g, '');
         if (digitsOnly.length < 8) {
@@ -443,7 +451,7 @@
         const payload = {
             nombre:        document.getElementById('nombre').value.trim(),
             apellido:      document.getElementById('apellido').value.trim(),
-            whatsapp:      rawWhatsapp,   // el backend lo normalizará
+            whatsapp:      rawWhatsapp,
             direccion:     document.getElementById('direccion').value.trim(),
             localidad:     document.getElementById('localidad').value.trim(),
             provincia:     document.getElementById('provincia').value,
@@ -453,7 +461,6 @@
             oferta_texto:  selectedOffer?.oferta_texto || ''
         };
 
-        // Validar campos obligatorios (además del required del formulario)
         if (!payload.nombre || !payload.apellido || !payload.direccion || !payload.localidad || !payload.codigo_postal) {
             alert('❌ Por favor completá todos los campos obligatorios.');
             submitBtn.innerHTML = origHTML;
@@ -472,7 +479,6 @@
                 alert('✅ ¡Pedido registrado con éxito en MF Soluciones!\n\nTe contactaremos a la brevedad.');
                 modalForm.style.display = "none";
                 document.getElementById('orderForm').reset();
-                // Opcional: resetear selectedOffer? No es necesario, pero se mantiene
             } else {
                 let errorMsg = `Error ${res.status}`;
                 try {
@@ -491,7 +497,7 @@
         }
     };
 
-    // Iniciar carga al abrir la página
+    // Iniciar la carga al abrir la página
     window.onload = fetchOfertas;
 </script>
 </body>
