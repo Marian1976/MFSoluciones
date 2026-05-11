@@ -268,7 +268,7 @@
                     <div class="offer-content">
                         <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
                         <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
-                        <div class="offer-price">$${item.precio || '0.00'}</div>
+                        ${item.precio && item.precio != '0' && item.precio != '0.00' ? `<div class="offer-price">$${item.precio}</div>` : ''}
                         <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
                             Expira: ${item.fecha_expiracion || 'Consultar'}
                         </p>
