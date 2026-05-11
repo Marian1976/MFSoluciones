@@ -251,11 +251,10 @@
 
 <script>
     // ======================== CONFIGURACIÓN ========================
-    // FIX: si el backend corre en otro servidor cambiá esta URL por la IP/dominio real.
-    // Ejemplo producción: const API_BASE_URL = 'http://192.168.1.100:8000';
     const API_BASE_URL = 'http://localhost:8000';
 
-    const FALLBACK_IMG = 'https://placehold.co/400x300/1a2236/00d4ff?text=MF+Soluciones';
+    // FIX: imagen por defecto desde GitHub en vez de placehold.co
+    const FALLBACK_IMG = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/oferta_default.jpg';
 
     const SAMPLE_OFFERS = [
         { id: 1, servicio_nombre: "AMD Ryzen",  oferta_texto: "AMD Ryzen 5 3400G + Motherboard",          precio: "600000", fecha_expiracion: "2025-12-31" },
@@ -285,15 +284,17 @@
 
     function openDetail(offer) {
         selectedOffer = offer;
-        const imgSrc = `https://placehold.co/400x300/ffffff/0a0e1a?text=${encodeURIComponent(offer.servicio_nombre || 'Oferta')}`;
 
-        document.getElementById('modalImg').src       = imgSrc;
-        document.getElementById('modalBadge').innerText = offer.servicio_nombre || 'SERVICIO';
-        document.getElementById('modalTitle').innerText = offer.oferta_texto    || 'Oferta Especial';
-        document.getElementById('modalPrice').innerHTML = (offer.precio && offer.precio !== '0')
+        // FIX: usa imagen_url de la BD si existe, si no usa la imagen por defecto de GitHub
+        const imgSrc = offer.imagen_url || FALLBACK_IMG;
+
+        document.getElementById('modalImg').src         = imgSrc;
+        document.getElementById('modalBadge').innerText  = offer.servicio_nombre || 'SERVICIO';
+        document.getElementById('modalTitle').innerText  = offer.oferta_texto    || 'Oferta Especial';
+        document.getElementById('modalPrice').innerHTML  = (offer.precio && offer.precio !== '0')
             ? `$${parseInt(offer.precio).toLocaleString('es-AR')}`
             : 'Consultar';
-        document.getElementById('modalDate').innerHTML = offer.fecha_expiracion
+        document.getElementById('modalDate').innerHTML   = offer.fecha_expiracion
             ? `📅 Expira: ${new Date(offer.fecha_expiracion).toLocaleDateString('es-AR')}`
             : '📅 Vigencia indefinida';
 
@@ -348,10 +349,12 @@
                 ? offer.oferta_texto.substring(0, 50) + '…'
                 : (offer.oferta_texto || 'Sin descripción');
 
+            // FIX: usa imagen_url de la BD si existe, si no usa la imagen por defecto de GitHub
+            const imgSrc = offer.imagen_url || FALLBACK_IMG;
+
             card.innerHTML = `
                 <div class="offer-img">
-                    <img src="https://placehold.co/300x200/ffffff/0a0e1a?text=${encodeURIComponent(offer.servicio_nombre || 'PC')}"
-                         onerror="this.src='${FALLBACK_IMG}';">
+                    <img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';">
                 </div>
                 <div class="offer-content">
                     <span class="badge">${offer.servicio_nombre || 'SERVICIO'}</span>
@@ -382,7 +385,7 @@
             provincia:     document.getElementById('provincia').value,
             codigo_postal: document.getElementById('codigo_postal').value.trim(),
             metodo_pago:   document.getElementById('metodo_pago').value,
-            oferta_id:     selectedOffer?.id    || null,
+            oferta_id:     selectedOffer?.id           || null,
             oferta_texto:  selectedOffer?.oferta_texto || ''
         };
 
@@ -425,4 +428,5 @@
 </script>
 </body>
 </html>
+
 
