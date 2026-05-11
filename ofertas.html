@@ -75,12 +75,12 @@
         .offer-card:hover { transform: translateY(-5px); border-color: var(--accent); }
 
         .offer-img {
-            width: 100%; height: 180px; background: #fff; /* Fondo blanco para hardware */
+            width: 100%; height: 180px; background: #fff;
             display: flex; align-items: center; justify-content: center;
         }
         .offer-img img {
             max-width: 90%; max-height: 90%;
-            object-fit: contain; /* Ajuste para que se vea la imagen completa */
+            object-fit: contain; /* Para que no se corte la imagen de hardware */
         }
 
         .offer-content { padding: 20px; }
@@ -93,7 +93,9 @@
             font-family: var(--font-mono); display: inline-block; margin-bottom: 8px;
         }
 
-        /* ── MODAL (NUEVO) ── */
+        .loading { text-align: center; padding: 50px; color: var(--muted); }
+
+        /* ── MODAL ── */
         .modal {
             display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.85); z-index: 1000;
@@ -110,13 +112,13 @@
         .modal-info { padding: 40px; display: flex; flex-direction: column; gap: 20px; }
         .close-modal {
             position: absolute; top: 20px; right: 20px;
-            color: var(--text); font-size: 24px; cursor: pointer; z-index: 10;
+            color: var(--text); font-size: 32px; cursor: pointer; z-index: 10;
         }
 
         @media (max-width: 768px) {
             .modal-content { grid-template-columns: 1fr; }
-            .sidebar { transform: translateX(-100%); }
-            .main { margin-left: 0; }
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: 20px; }
         }
     </style>
 </head>
@@ -161,7 +163,7 @@
     const modal = document.getElementById('offerModal');
     const closeBtn = document.getElementById('closeModal');
 
-    // Cerrar modal
+    // Funciones para cerrar modal
     closeBtn.onclick = () => modal.style.display = "none";
     window.onclick = (e) => { if(e.target == modal) modal.style.display = "none"; }
 
@@ -169,7 +171,7 @@
         document.getElementById('modalImg').src = imgSrc;
         document.getElementById('modalBadge').innerText = item.servicio_nombre || 'SERVICIO';
         document.getElementById('modalTitle').innerText = item.oferta_texto || 'Oferta Especial';
-        document.getElementById('modalDesc').innerText = "Optimización técnica avanzada para tu equipo. Consultá por stock disponible y formas de pago.";
+        document.getElementById('modalDesc').innerText = "Válido para la ciudad de Santa Fe. Consultar por envíos o instalación a domicilio.";
         document.getElementById('modalPrice').innerText = item.precio && item.precio != '0' ? `$${item.precio}` : 'Consultar';
         document.getElementById('modalDate').innerText = `Expira: ${item.fecha_expiracion || 'Consultar'}`;
         modal.style.display = "flex";
@@ -180,31 +182,40 @@
         const container = document.getElementById('offers-container');
 
         try {
+            // Se usa la constante API de config.js
             const response = await fetch(`${API}/ofertas`); 
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
+            
             loading.style.display = 'none';
+            container.innerHTML = '';
 
             data.forEach((item, index) => {
+                // Rotación de imágenes usando ASSETS_URL
                 const num = index % 5 === 0 ? '' : index % 5; 
                 const imgSrc = ASSETS_URL + `oferta_default${num}.jpg`;
 
                 const card = document.createElement('div');
                 card.className = 'offer-card';
-                card.onclick = () => openDetail(item, imgSrc); // Abrir modal al hacer clic
+                
+                // Evento para abrir el modal
+                card.onclick = () => openDetail(item, imgSrc);
+                
                 card.innerHTML = `
                     <div class="offer-img">
                         <img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';">
                     </div>
                     <div class="offer-content">
                         <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
-                        <h3 class="offer-title">${item.oferta_texto}</h3>
+                        <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
                         ${item.precio && item.precio != '0' ? `<div class="offer-price">$${item.precio}</div>` : ''}
                     </div>
                 `;
                 container.appendChild(card);
             });
         } catch (error) {
-            loading.innerHTML = "Error al conectar con la API.";
+            console.error('Error:', error);
+            loading.innerHTML = `<span style="color:#f87171">Error al conectar con la base de datos.</span>`;
         }
     }
 
