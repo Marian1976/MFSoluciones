@@ -161,15 +161,19 @@
 <div id="offerModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" id="closeDetail">&times;</span>
-        <div class="modal-img"><img id="modalImg" src=""></div>
+        <div class="modal-img">
+            <img id="modalImg" src="" alt="Producto">
+        </div>
         <div class="modal-info">
             <span class="badge" id="modalBadge"></span>
             <h2 id="modalTitle" style="color: var(--accent);"></h2>
             <p id="modalDesc" style="line-height: 1.6; color: var(--muted);">Válido para la ciudad de Santa Fe. Consultar por envíos o instalación a domicilio.</p>
             <div id="modalPrice" class="offer-price" style="font-size: 32px;"></div>
+            
             <button id="btnOpenForm" class="btn-comprar">
                 <i class="fas fa-shopping-cart"></i> Iniciar Pedido
             </button>
+            
             <p id="modalDate" style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);"></p>
         </div>
     </div>
@@ -233,7 +237,9 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-comprar">Confirmar Pedido</button>
+            <button type="submit" class="btn-comprar" style="width: 100%; margin-top: 10px;">
+                Confirmar Pedido
+            </button>
         </form>
     </div>
 </div>
@@ -253,6 +259,7 @@
         if(e.target === modalForm) modalForm.style.display = "none";
     }
 
+    // Abrir Formulario desde el botón de comprar
     document.getElementById('btnOpenForm').onclick = () => {
         modalDetail.style.display = "none";
         modalForm.style.display = "flex";
@@ -268,7 +275,7 @@
         modalDetail.style.display = "flex";
     }
 
-    // ── CARGA DE OFERTAS ──
+    // ── CARGA DE DATOS ──
     async function fetchOfertas() {
         const loading = document.getElementById('loading');
         const container = document.getElementById('offers-container');
@@ -290,12 +297,15 @@
                 card.onclick = () => openDetail(item, imgSrc);
                 
                 card.innerHTML = `
-                    <div class="offer-img"><img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';"></div>
+                    <div class="offer-img">
+                        <img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';">
+                    </div>
                     <div class="offer-content">
                         <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
                         <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
                         ${item.precio && item.precio != '0' ? `<div class="offer-price">$${item.precio}</div>` : ''}
-                    </div>`;
+                    </div>
+                `;
                 container.appendChild(card);
             });
         } catch (error) {
@@ -304,10 +314,11 @@
         }
     }
 
-    // ── ENVÍO DE PEDIDO A DB ──
+    // ── ENVÍO DE PEDIDO (CORREGIDO PARA DB) ──
     document.getElementById('orderForm').onsubmit = async (e) => {
         e.preventDefault();
         
+        // Los nombres de las propiedades coinciden con las columnas de tu tabla clientes_pedidos
         const payload = {
             nombre: document.getElementById('nombre').value,
             apellido: document.getElementById('apellido').value,
@@ -332,7 +343,7 @@
                 modalForm.style.display = "none";
                 document.getElementById('orderForm').reset();
             } else {
-                alert('Error al guardar el pedido. Revisa la consola (F12).');
+                alert('Error al guardar el pedido. Revisa que tu servidor acepte estos campos.');
             }
         } catch (err) {
             alert('Error de conexión con la API.');
