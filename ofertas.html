@@ -41,31 +41,18 @@
             z-index: 100;
         }
 
-        .logo h1 {
-            font-size: 18px;
-            color: var(--accent);
-            font-family: var(--font-mono);
-            margin-bottom: 30px;
-        }
+        .logo h1 { font-size: 18px; color: var(--accent); font-family: var(--font-mono); margin-bottom: 30px; }
 
         .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.3s;
-            border-radius: 8px;
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            color: var(--muted); text-decoration: none; font-size: 14px;
+            transition: 0.3s; border-radius: 8px;
         }
-
         .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
         .nav-item.active { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
 
         /* ── MAIN ── */
         .main { margin-left: 240px; flex: 1; padding: 40px; }
-
         .header { margin-bottom: 40px; }
         .header h2 { font-size: 24px; font-weight: 700; }
         .header p { color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
@@ -83,96 +70,60 @@
             border-radius: 12px;
             overflow: hidden;
             transition: transform 0.2s;
+            cursor: pointer;
         }
-
         .offer-card:hover { transform: translateY(-5px); border-color: var(--accent); }
 
         .offer-img {
-            width: 100%;
-            height: 180px;
-            background: var(--surface2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            width: 100%; height: 180px; background: #fff; /* Fondo blanco para hardware */
+            display: flex; align-items: center; justify-content: center;
         }
-
         .offer-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            max-width: 90%; max-height: 90%;
+            object-fit: contain; /* Ajuste para que se vea la imagen completa */
         }
 
         .offer-content { padding: 20px; }
         .offer-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; min-height: 40px; }
-        .offer-price {
-            font-family: var(--font-mono);
-            font-size: 20px;
-            color: var(--green);
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
+        .offer-price { font-family: var(--font-mono); font-size: 20px; color: var(--green); font-weight: 700; }
 
         .badge {
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--accent);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-family: var(--font-mono);
-            display: inline-block;
-            margin-bottom: 8px;
+            background: rgba(0, 212, 255, 0.1); color: var(--accent);
+            padding: 4px 8px; border-radius: 4px; font-size: 11px;
+            font-family: var(--font-mono); display: inline-block; margin-bottom: 8px;
         }
 
-        .loading { text-align: center; padding: 50px; color: var(--muted); }
-        .error { text-align: center; padding: 50px; color: #f87171; font-family: var(--font-mono); font-size: 13px; }
-
-        /* ── MOBILE ── */
-        .hamburger {
-            display: none;
-            position: fixed;
-            top: 14px;
-            left: 14px;
-            z-index: 200;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 13px;
-            cursor: pointer;
-            color: var(--accent);
-            font-size: 18px;
+        /* ── MODAL (NUEVO) ── */
+        .modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85); z-index: 1000;
+            align-items: center; justify-content: center; padding: 20px;
         }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 90;
+        .modal-content {
+            background: var(--surface); border: 1px solid var(--accent);
+            border-radius: 16px; max-width: 900px; width: 100%;
+            display: grid; grid-template-columns: 1.2fr 1fr; overflow: hidden;
+            position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
         }
-        .overlay.active { display: block; }
+        .modal-img { background: #fff; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-img img { max-width: 100%; max-height: 500px; object-fit: contain; }
+        .modal-info { padding: 40px; display: flex; flex-direction: column; gap: 20px; }
+        .close-modal {
+            position: absolute; top: 20px; right: 20px;
+            color: var(--text); font-size: 24px; cursor: pointer; z-index: 10;
+        }
 
         @media (max-width: 768px) {
-            .hamburger { display: block; }
-            .sidebar { transform: translateX(-100%); transition: transform 0.28s ease; }
-            .sidebar.open { transform: translateX(0); }
-            .main { margin-left: 0; padding: 70px 16px 32px; }
-            .offers-grid { grid-template-columns: 1fr; }
+            .modal-content { grid-template-columns: 1fr; }
+            .sidebar { transform: translateX(-100%); }
+            .main { margin-left: 0; }
         }
     </style>
 </head>
 <body>
 
-<button class="hamburger" id="menuBtn">
-    <i class="fas fa-bars" id="menuIcon"></i>
-</button>
-
-<div class="overlay" id="overlay"></div>
-
-<div class="sidebar" id="sidebar">
-    <div class="logo">
-        <h1>MF<span>Soluciones</span></h1>
-    </div>
+<div class="sidebar">
+    <div class="logo"><h1>MF<span>Soluciones</span></h1></div>
     <nav>
         <a href="index.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
         <a href="ofertas.html" class="nav-item active"><i class="fas fa-tags"></i> Ofertas</a>
@@ -185,84 +136,79 @@
         <h2>Catálogo de Ofertas</h2>
         <p>// visualización de servicios activos</p>
     </div>
-
-    <div id="loading" class="loading">
-        <i class="fas fa-spinner fa-spin"></i> Conectando con la base de datos...
-    </div>
-
+    <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Conectando...</div>
     <div class="offers-grid" id="offers-container"></div>
+</div>
+
+<div id="offerModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <div class="modal-img">
+            <img id="modalImg" src="" alt="Zoom">
+        </div>
+        <div class="modal-info">
+            <span class="badge" id="modalBadge"></span>
+            <h2 id="modalTitle" style="color: var(--accent);"></h2>
+            <p id="modalDesc" style="line-height: 1.6; color: var(--muted);"></p>
+            <div id="modalPrice" class="offer-price" style="font-size: 32px;"></div>
+            <p id="modalDate" style="font-family: var(--font-mono); font-size: 12px;"></p>
+        </div>
+    </div>
 </div>
 
 <script src="config.js"></script>
 <script>
-    // Control del Menú
-    const menuBtn  = document.getElementById('menuBtn');
-    const sidebar  = document.getElementById('sidebar');
-    const overlay  = document.getElementById('overlay');
-    const menuIcon = document.getElementById('menuIcon');
+    const modal = document.getElementById('offerModal');
+    const closeBtn = document.getElementById('closeModal');
 
-    function toggleMenu() {
-        const open = sidebar.classList.toggle('open');
-        overlay.classList.toggle('active', open);
-        menuIcon.className = open ? 'fas fa-times' : 'fas fa-bars';
+    // Cerrar modal
+    closeBtn.onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if(e.target == modal) modal.style.display = "none"; }
+
+    function openDetail(item, imgSrc) {
+        document.getElementById('modalImg').src = imgSrc;
+        document.getElementById('modalBadge').innerText = item.servicio_nombre || 'SERVICIO';
+        document.getElementById('modalTitle').innerText = item.oferta_texto || 'Oferta Especial';
+        document.getElementById('modalDesc').innerText = "Optimización técnica avanzada para tu equipo. Consultá por stock disponible y formas de pago.";
+        document.getElementById('modalPrice').innerText = item.precio && item.precio != '0' ? `$${item.precio}` : 'Consultar';
+        document.getElementById('modalDate').innerText = `Expira: ${item.fecha_expiracion || 'Consultar'}`;
+        modal.style.display = "flex";
     }
 
-    menuBtn.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', toggleMenu);
-
-    // Función de carga conectada a config.js
     async function fetchOfertas() {
-        const loading   = document.getElementById('loading');
+        const loading = document.getElementById('loading');
         const container = document.getElementById('offers-container');
 
         try {
-            // Utilizamos la URL base definida en config.js
             const response = await fetch(`${API}/ofertas`); 
-            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
             const data = await response.json();
-
             loading.style.display = 'none';
-            container.innerHTML = '';
 
             data.forEach((item, index) => {
-                // Lógica para rotar imágenes según las constantes de config.js
                 const num = index % 5 === 0 ? '' : index % 5; 
-                const nombreImagen = `oferta_default${num}.jpg`;
-                
-                // ASSETS_URL viene de config.js
-                const imgSrc = ASSETS_URL + nombreImagen;
+                const imgSrc = ASSETS_URL + `oferta_default${num}.jpg`;
 
                 const card = document.createElement('div');
                 card.className = 'offer-card';
+                card.onclick = () => openDetail(item, imgSrc); // Abrir modal al hacer clic
                 card.innerHTML = `
                     <div class="offer-img">
-                        <img 
-                            src="${imgSrc}" 
-                            alt="Oferta"
-                            onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
-                        >
+                        <img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';">
                     </div>
                     <div class="offer-content">
                         <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
-                        <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
+                        <h3 class="offer-title">${item.oferta_texto}</h3>
                         ${item.precio && item.precio != '0' ? `<div class="offer-price">$${item.precio}</div>` : ''}
-                        <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
-                            Expira: ${item.fecha_expiracion || 'Consultar'}
-                        </p>
                     </div>
                 `;
                 container.appendChild(card);
             });
-
         } catch (error) {
-            console.error('Error:', error);
-            loading.className = 'error';
-            loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar.<br><small>${error.message}</small>`;
+            loading.innerHTML = "Error al conectar con la API.";
         }
     }
 
     window.onload = fetchOfertas;
 </script>
-
 </body>
 </html>
