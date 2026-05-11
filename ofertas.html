@@ -127,7 +127,7 @@
         .loading { text-align: center; padding: 50px; color: var(--muted); }
         .error { text-align: center; padding: 50px; color: #f87171; font-family: var(--font-mono); font-size: 13px; }
 
-        /* ── HAMBURGUESA (solo móvil) ── */
+        /* ── MOBILE ── */
         .hamburger {
             display: none;
             position: fixed;
@@ -141,10 +141,8 @@
             cursor: pointer;
             color: var(--accent);
             font-size: 18px;
-            line-height: 1;
         }
 
-        /* ── OVERLAY ── */
         .overlay {
             display: none;
             position: fixed;
@@ -154,35 +152,21 @@
         }
         .overlay.active { display: block; }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
             .hamburger { display: block; }
-
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.28s ease;
-            }
+            .sidebar { transform: translateX(-100%); transition: transform 0.28s ease; }
             .sidebar.open { transform: translateX(0); }
-
-            .main {
-                margin-left: 0;
-                padding: 70px 16px 32px;
-            }
-
-            .offers-grid {
-                grid-template-columns: 1fr;
-            }
+            .main { margin-left: 0; padding: 70px 16px 32px; }
+            .offers-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<!-- Botón hamburguesa -->
-<button class="hamburger" id="menuBtn" aria-label="Abrir menú">
+<button class="hamburger" id="menuBtn">
     <i class="fas fa-bars" id="menuIcon"></i>
 </button>
 
-<!-- Overlay oscuro -->
 <div class="overlay" id="overlay"></div>
 
 <div class="sidebar" id="sidebar">
@@ -211,9 +195,7 @@
 
 <script src="config.js"></script>
 <script>
-    // ► La URL del túnel y los assets se leen desde config.js — no toques este archivo
-
-    // ── Menú hamburguesa ──
+    // Control del Menú
     const menuBtn  = document.getElementById('menuBtn');
     const sidebar  = document.getElementById('sidebar');
     const overlay  = document.getElementById('overlay');
@@ -228,64 +210,54 @@
     menuBtn.addEventListener('click', toggleMenu);
     overlay.addEventListener('click', toggleMenu);
 
-    // Cerrar menú al tocar un link
-    document.querySelectorAll('.nav-item').forEach(link => {
-        link.addEventListener('click', () => {
-            if (sidebar.classList.contains('open')) toggleMenu();
-        });
-    });
-
-    // ── API — valores definidos en config.js ──
-
+    // Función de carga conectada a config.js
     async function fetchOfertas() {
         const loading   = document.getElementById('loading');
         const container = document.getElementById('offers-container');
 
         try {
-            const response = await fetch(`${API_BASE_URL}/ofertas`);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            // Utilizamos la URL base definida en config.js
+            const response = await fetch(`${API}/ofertas`); 
+            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
             const data = await response.json();
 
             loading.style.display = 'none';
             container.innerHTML = '';
 
             data.forEach((item, index) => {
-    // Definimos el nombre de la imagen basado en la posición (0, 1, 2, 3, 4)
-    // Si hay más de 5 ofertas, volverá a empezar desde la primera imagen
-    const numImagen = index === 0 ? '' : index % 5; 
-    const nombreArchivo = `oferta_default${numImagen}.jpg`;
-    
-    // Construimos la URL completa usando la constante de config.js
-    const imgSrc = ASSETS_URL + nombreArchivo;
+                // Lógica para rotar imágenes según las constantes de config.js
+                const num = index % 5 === 0 ? '' : index % 5; 
+                const nombreImagen = `oferta_default${num}.jpg`;
+                
+                // ASSETS_URL viene de config.js
+                const imgSrc = ASSETS_URL + nombreImagen;
 
-    const card = document.createElement('div');
-    card.className = 'offer-card';
-    card.innerHTML = `
-        <div class="offer-img">
-            <img 
-                src="${imgSrc}" 
-                alt="Imagen Oferta ${index}"
-                onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
-            >
-        </div>
-        <div class="offer-content">
-            <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
-            <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
-            ${item.precio && item.precio != '0' ? `<div class="offer-price">$${item.precio}</div>` : ''}
-            <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
-                Expira: ${item.fecha_expiracion || 'Consultar'}
-            </p>
-        </div>
-    `;
-    container.appendChild(card);
-});
+                const card = document.createElement('div');
+                card.className = 'offer-card';
+                card.innerHTML = `
+                    <div class="offer-img">
+                        <img 
+                            src="${imgSrc}" 
+                            alt="Oferta"
+                            onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
+                        >
+                    </div>
+                    <div class="offer-content">
+                        <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
+                        <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
+                        ${item.precio && item.precio != '0' ? `<div class="offer-price">$${item.precio}</div>` : ''}
+                        <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
+                            Expira: ${item.fecha_expiracion || 'Consultar'}
+                        </p>
+                    </div>
+                `;
                 container.appendChild(card);
             });
 
         } catch (error) {
-            console.error('Error al cargar ofertas:', error);
+            console.error('Error:', error);
             loading.className = 'error';
-            loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar con la API.<br><small>${error.message}</small>`;
+            loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar.<br><small>${error.message}</small>`;
         }
     }
 
