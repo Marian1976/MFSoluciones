@@ -75,7 +75,7 @@
         .offer-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 25px -5px rgba(0,212,255,0.1); }
 
         .offer-img {
-            width: 100%; height: 200px; background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+            width: 100%; height: 200px; background: linear-gradient(135deg, #111827 0%, #1a2236 100%);
             display: flex; align-items: center; justify-content: center;
         }
         .offer-img img { max-width: 85%; max-height: 85%; object-fit: contain; }
@@ -104,7 +104,7 @@
             display: grid; grid-template-columns: 1.2fr 1fr; overflow: hidden;
             position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        .modal-img { background: #fff; display: flex; align-items: center; justify-content: center; padding: 30px; min-height: 400px; }
+        .modal-img { background: #fff; display: flex; align-items: center; justify-content: center; padding: 30px; min-height: 400px; background: #fefefe; }
         .modal-img img { max-width: 100%; max-height: 400px; object-fit: contain; }
         .modal-info { padding: 40px; display: flex; flex-direction: column; gap: 20px; }
         .close-modal {
@@ -133,6 +133,9 @@
         }
         .form-group input:focus, .form-group select:focus {
             outline: none; border-color: var(--accent);
+        }
+        .help-text {
+            font-size: 11px; color: var(--muted); margin-top: 5px;
         }
 
         @media (max-width: 768px) {
@@ -202,8 +205,9 @@
             </div>
 
             <div class="form-group">
-                <label>WhatsApp (Sin 0 ni 15) *</label>
-                <input type="tel" id="whatsapp" required placeholder="3424787347">
+                <label>WhatsApp (incluí 54 o 549 si querés) *</label>
+                <input type="tel" id="whatsapp" required placeholder="3424787347 o 5493424787347">
+                <div class="help-text">Ejemplo: 3424787347 o 5493424787347. Nosotros normalizamos el número.</div>
             </div>
 
             <div class="form-group">
@@ -251,17 +255,46 @@
 
 <script>
     // ======================== CONFIGURACIÓN ========================
+    // Cambiá esta URL si tu backend corre en otro puerto o dominio
     const API_BASE_URL = 'http://localhost:8000';
-
-    // FIX: imagen por defecto desde GitHub en vez de placehold.co
-    const FALLBACK_IMG = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/oferta_default.jpg';
-    const GITHUB_IMG_BASE = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
-
+    
+    // Imagen de respaldo si la oferta no tiene imagen_url
+    const FALLBACK_IMG = 'https://placehold.co/600x400/0a0e1a/00d4ff?text=MF+Soluciones';
+    
+    // Datos de ejemplo para modo demostración (sin backend)
     const SAMPLE_OFFERS = [
-        { id: 1, servicio_nombre: "AMD Ryzen",  oferta_texto: "AMD Ryzen 5 3400G + Motherboard",          precio: "600000", fecha_expiracion: "2025-12-31" },
-        { id: 2, servicio_nombre: "Intel Core", oferta_texto: "Intel i7 10700K + Motherboard + 16GB RAM",  precio: "850000", fecha_expiracion: "2025-12-31" },
-        { id: 3, servicio_nombre: "Notebook",   oferta_texto: "Notebook Lenovo ThinkPad + Mochila",        precio: "450000", fecha_expiracion: "2025-12-31" },
-        { id: 4, servicio_nombre: "Monitor",    oferta_texto: 'Monitor 24" Full HD + Teclado Mecánico',    precio: "180000", fecha_expiracion: "2025-12-31" }
+        { 
+            id: 1, 
+            servicio_nombre: "AMD Ryzen", 
+            oferta_texto: "AMD Ryzen 5 3400G + Motherboard + Cooler", 
+            precio: "600000", 
+            fecha_expiracion: "2025-12-31",
+            imagen_url: null
+        },
+        { 
+            id: 2, 
+            servicio_nombre: "Intel Core", 
+            oferta_texto: "Intel i7 10700K + Motherboard Z490 + 16GB RAM", 
+            precio: "850000", 
+            fecha_expiracion: "2025-12-31",
+            imagen_url: null
+        },
+        { 
+            id: 3, 
+            servicio_nombre: "Notebook", 
+            oferta_texto: "Notebook Lenovo ThinkPad + Mochila + Mouse", 
+            precio: "450000", 
+            fecha_expiracion: "2025-12-31",
+            imagen_url: null
+        },
+        { 
+            id: 4, 
+            servicio_nombre: "Monitor", 
+            oferta_texto: 'Monitor 24" Full HD + Teclado Mecánico', 
+            precio: "180000", 
+            fecha_expiracion: "2025-12-31",
+            imagen_url: null
+        }
     ];
 
     // ======================== ELEMENTOS DOM ========================
@@ -283,22 +316,27 @@
         modalForm.style.display   = "flex";
     };
 
+    // Abre el modal con los datos de la oferta seleccionada
     function openDetail(offer) {
         selectedOffer = offer;
-
-        // FIX: usa imagen_url de la BD si existe, si no usa la imagen por defecto de GitHub
-        const imgSrc = offer.imagen_url || FALLBACK_IMG;
-
-        document.getElementById('modalImg').src         = imgSrc;
-        document.getElementById('modalBadge').innerText  = offer.servicio_nombre || 'SERVICIO';
-        document.getElementById('modalTitle').innerText  = offer.oferta_texto    || 'Oferta Especial';
-        document.getElementById('modalPrice').innerHTML  = (offer.precio && offer.precio !== '0')
-            ? `$${parseInt(offer.precio).toLocaleString('es-AR')}`
-            : 'Consultar';
-        document.getElementById('modalDate').innerHTML   = offer.fecha_expiracion
+        const imgUrl = offer.imagen_url && offer.imagen_url.trim() !== "" ? offer.imagen_url : FALLBACK_IMG;
+        document.getElementById('modalImg').src = imgUrl;
+        document.getElementById('modalBadge').innerText = offer.servicio_nombre || 'SERVICIO';
+        document.getElementById('modalTitle').innerText = offer.oferta_texto || 'Oferta Especial';
+        
+        let priceDisplay = 'Consultar';
+        if (offer.precio && offer.precio !== '0') {
+            const numericPrice = parseFloat(offer.precio);
+            if (!isNaN(numericPrice)) {
+                priceDisplay = `$${numericPrice.toLocaleString('es-AR')}`;
+            }
+        }
+        document.getElementById('modalPrice').innerHTML = priceDisplay;
+        
+        document.getElementById('modalDate').innerHTML = offer.fecha_expiracion
             ? `📅 Expira: ${new Date(offer.fecha_expiracion).toLocaleDateString('es-AR')}`
             : '📅 Vigencia indefinida';
-
+        
         modalDetail.style.display = "flex";
     }
 
@@ -334,7 +372,6 @@
 
     function displayOffers(offers) {
         const container = document.getElementById('offers-container');
-        const imgSrc = offer.imagen ? GITHUB_IMG_BASE + offer.imagen : FALLBACK_IMG;
         container.innerHTML = '';
 
         if (!offers || offers.length === 0) {
@@ -351,27 +388,52 @@
                 ? offer.oferta_texto.substring(0, 50) + '…'
                 : (offer.oferta_texto || 'Sin descripción');
 
-            // FIX: usa imagen_url de la BD si existe, si no usa la imagen por defecto de GitHub
-            const imgSrc = offer.imagen_url || FALLBACK_IMG;
+            // Imagen: usar imagen_url si existe, sino fallback
+            const imgSrc = (offer.imagen_url && offer.imagen_url.trim() !== "") ? offer.imagen_url : FALLBACK_IMG;
+
+            let priceHtml = '<div class="offer-price">Consultar</div>';
+            if (offer.precio && offer.precio !== '0') {
+                const numericPrice = parseFloat(offer.precio);
+                if (!isNaN(numericPrice)) {
+                    priceHtml = `<div class="offer-price">$${numericPrice.toLocaleString('es-AR')}</div>`;
+                }
+            }
 
             card.innerHTML = `
                 <div class="offer-img">
                     <img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';">
                 </div>
                 <div class="offer-content">
-                    <span class="badge">${offer.servicio_nombre || 'SERVICIO'}</span>
-                    <h3 class="offer-title">${shortTitle}</h3>
-                    ${offer.precio && offer.precio !== '0'
-                        ? `<div class="offer-price">$${parseInt(offer.precio).toLocaleString('es-AR')}</div>`
-                        : '<div class="offer-price">Consultar</div>'}
+                    <span class="badge">${escapeHtml(offer.servicio_nombre || 'SERVICIO')}</span>
+                    <h3 class="offer-title">${escapeHtml(shortTitle)}</h3>
+                    ${priceHtml}
                 </div>`;
             container.appendChild(card);
+        });
+    }
+
+    // Utilidad simple para evitar XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
         });
     }
 
     // ======================== ENVÍO DE PEDIDO ========================
     document.getElementById('orderForm').onsubmit = async (e) => {
         e.preventDefault();
+
+        // Validación amigable de whatsapp: al menos 8 dígitos (puede incluir 54, 549 etc)
+        let rawWhatsapp = document.getElementById('whatsapp').value.trim();
+        const digitsOnly = rawWhatsapp.replace(/\D/g, '');
+        if (digitsOnly.length < 8) {
+            alert('⚠️ El número de WhatsApp debe tener al menos 8 dígitos. Podés incluir el código de país (54 o 549).');
+            return;
+        }
 
         const submitBtn  = e.target.querySelector('button[type="submit"]');
         const origHTML   = submitBtn.innerHTML;
@@ -381,21 +443,21 @@
         const payload = {
             nombre:        document.getElementById('nombre').value.trim(),
             apellido:      document.getElementById('apellido').value.trim(),
-            whatsapp:      document.getElementById('whatsapp').value.trim(),
+            whatsapp:      rawWhatsapp,   // el backend lo normalizará
             direccion:     document.getElementById('direccion').value.trim(),
             localidad:     document.getElementById('localidad').value.trim(),
             provincia:     document.getElementById('provincia').value,
             codigo_postal: document.getElementById('codigo_postal').value.trim(),
             metodo_pago:   document.getElementById('metodo_pago').value,
-            oferta_id:     selectedOffer?.id           || null,
+            oferta_id:     selectedOffer?.id || null,
             oferta_texto:  selectedOffer?.oferta_texto || ''
         };
 
-        // Validación WhatsApp: 9 o 10 dígitos, sin 0 ni 15
-        if (!/^\d{9,10}$/.test(payload.whatsapp)) {
-            alert('⚠️ El WhatsApp debe tener entre 9 y 10 dígitos, sin el 0 y sin el 15.');
+        // Validar campos obligatorios (además del required del formulario)
+        if (!payload.nombre || !payload.apellido || !payload.direccion || !payload.localidad || !payload.codigo_postal) {
+            alert('❌ Por favor completá todos los campos obligatorios.');
             submitBtn.innerHTML = origHTML;
-            submitBtn.disabled  = false;
+            submitBtn.disabled = false;
             return;
         }
 
@@ -410,10 +472,14 @@
                 alert('✅ ¡Pedido registrado con éxito en MF Soluciones!\n\nTe contactaremos a la brevedad.');
                 modalForm.style.display = "none";
                 document.getElementById('orderForm').reset();
+                // Opcional: resetear selectedOffer? No es necesario, pero se mantiene
             } else {
-                const errorText = await res.text();
-                console.error('Error del servidor:', errorText);
-                alert(`❌ Error al guardar el pedido. El servidor respondió: ${res.status}\n\nDetalles en consola (F12).`);
+                let errorMsg = `Error ${res.status}`;
+                try {
+                    const errorData = await res.json();
+                    errorMsg = errorData.mensaje || errorData.error || errorMsg;
+                } catch (err) { /* ignore */ }
+                alert(`❌ No se pudo guardar el pedido: ${errorMsg}\n\nVerificá que el backend esté corriendo correctamente.`);
             }
         } catch (err) {
             console.error('Error de conexión:', err);
