@@ -164,6 +164,7 @@
     <div class="offers-grid" id="offers-container"></div>
 </div>
 
+<!-- Modal detalle oferta -->
 <div id="offerModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" id="closeDetail">&times;</span>
@@ -181,12 +182,13 @@
     </div>
 </div>
 
+<!-- Modal formulario pedido -->
 <div id="formModal" class="modal">
     <div class="modal-content" style="grid-template-columns: 1fr; max-width: 550px; padding: 35px;">
         <span class="close-modal" id="closeForm">&times;</span>
         <h2 style="color: var(--accent); margin-bottom: 5px;">Finalizar Pedido</h2>
         <p style="color: var(--muted); font-size: 13px; margin-bottom: 25px;">Completa tus datos para coordinar el envío o retiro.</p>
-        
+
         <form id="orderForm">
             <div style="display: flex; gap: 12px;">
                 <div class="form-group" style="flex: 1;">
@@ -249,157 +251,157 @@
 
 <script>
     // ======================== CONFIGURACIÓN ========================
-    // Cambiá esta URL si tu backend corre en otro puerto o dominio
+    // FIX: si el backend corre en otro servidor cambiá esta URL por la IP/dominio real.
+    // Ejemplo producción: const API_BASE_URL = 'http://192.168.1.100:8000';
     const API_BASE_URL = 'http://localhost:8000';
-    
-    // Imagen por defecto si falla la carga
+
     const FALLBACK_IMG = 'https://placehold.co/400x300/1a2236/00d4ff?text=MF+Soluciones';
-    
-    // Datos de ejemplo en caso de que la API no esté disponible
+
     const SAMPLE_OFFERS = [
-        { id: 1, servicio_nombre: "AMD Ryzen", oferta_texto: "AMD Ryzen 5 3400G + Motherboard", precio: "600000", fecha_expiracion: "2025-12-31" },
-        { id: 2, servicio_nombre: "Intel Core", oferta_texto: "Intel i7 10700K + Motherboard + 16GB RAM", precio: "850000", fecha_expiracion: "2025-12-31" },
-        { id: 3, servicio_nombre: "Notebook", oferta_texto: "Notebook Lenovo ThinkPad + Mochila", precio: "450000", fecha_expiracion: "2025-12-31" },
-        { id: 4, servicio_nombre: "Monitor", oferta_texto: 'Monitor 24" Full HD + Teclado Mecánico', precio: "180000", fecha_expiracion: "2025-12-31" }
+        { id: 1, servicio_nombre: "AMD Ryzen",  oferta_texto: "AMD Ryzen 5 3400G + Motherboard",          precio: "600000", fecha_expiracion: "2025-12-31" },
+        { id: 2, servicio_nombre: "Intel Core", oferta_texto: "Intel i7 10700K + Motherboard + 16GB RAM",  precio: "850000", fecha_expiracion: "2025-12-31" },
+        { id: 3, servicio_nombre: "Notebook",   oferta_texto: "Notebook Lenovo ThinkPad + Mochila",        precio: "450000", fecha_expiracion: "2025-12-31" },
+        { id: 4, servicio_nombre: "Monitor",    oferta_texto: 'Monitor 24" Full HD + Teclado Mecánico',    precio: "180000", fecha_expiracion: "2025-12-31" }
     ];
-    
+
     // ======================== ELEMENTOS DOM ========================
     const modalDetail = document.getElementById('offerModal');
-    const modalForm = document.getElementById('formModal');
+    const modalForm   = document.getElementById('formModal');
     let selectedOffer = null;
-    
+
     // ======================== MODALES ========================
     document.getElementById('closeDetail').onclick = () => modalDetail.style.display = "none";
-    document.getElementById('closeForm').onclick = () => modalForm.style.display = "none";
-    
-    window.onclick = (e) => { 
-        if(e.target === modalDetail) modalDetail.style.display = "none";
-        if(e.target === modalForm) modalForm.style.display = "none";
-    }
-    
+    document.getElementById('closeForm').onclick   = () => modalForm.style.display   = "none";
+
+    window.onclick = (e) => {
+        if (e.target === modalDetail) modalDetail.style.display = "none";
+        if (e.target === modalForm)   modalForm.style.display   = "none";
+    };
+
     document.getElementById('btnOpenForm').onclick = () => {
         modalDetail.style.display = "none";
-        modalForm.style.display = "flex";
+        modalForm.style.display   = "flex";
     };
-    
+
     function openDetail(offer) {
         selectedOffer = offer;
-        // Generar imagen de placeholder con el nombre del servicio
         const imgSrc = `https://placehold.co/400x300/ffffff/0a0e1a?text=${encodeURIComponent(offer.servicio_nombre || 'Oferta')}`;
-        
-        document.getElementById('modalImg').src = imgSrc;
+
+        document.getElementById('modalImg').src       = imgSrc;
         document.getElementById('modalBadge').innerText = offer.servicio_nombre || 'SERVICIO';
-        document.getElementById('modalTitle').innerText = offer.oferta_texto || 'Oferta Especial';
-        document.getElementById('modalPrice').innerHTML = (offer.precio && offer.precio != '0') ? `$${parseInt(offer.precio).toLocaleString('es-AR')}` : 'Consultar';
-        document.getElementById('modalDate').innerHTML = offer.fecha_expiracion ? `📅 Expira: ${new Date(offer.fecha_expiracion).toLocaleDateString('es-AR')}` : '📅 Vigencia indefinida';
+        document.getElementById('modalTitle').innerText = offer.oferta_texto    || 'Oferta Especial';
+        document.getElementById('modalPrice').innerHTML = (offer.precio && offer.precio !== '0')
+            ? `$${parseInt(offer.precio).toLocaleString('es-AR')}`
+            : 'Consultar';
+        document.getElementById('modalDate').innerHTML = offer.fecha_expiracion
+            ? `📅 Expira: ${new Date(offer.fecha_expiracion).toLocaleDateString('es-AR')}`
+            : '📅 Vigencia indefinida';
+
         modalDetail.style.display = "flex";
     }
-    
+
     // ======================== CARGA DE OFERTAS ========================
     async function fetchOfertas() {
-        const loading = document.getElementById('loading');
+        const loading   = document.getElementById('loading');
         const container = document.getElementById('offers-container');
-    
+
         try {
             const response = await fetch(`${API_BASE_URL}/ofertas`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 displayOffers(data);
+                loading.style.display = 'none';
             } else {
                 throw new Error(`API respondió con ${response.status}`);
             }
         } catch (error) {
             console.warn('Error conectando a API, usando datos de ejemplo:', error);
             displayOffers(SAMPLE_OFFERS);
-            const loadingDiv = document.getElementById('loading');
-            loadingDiv.innerHTML = `<div class="error-message">
-                <i class="fas fa-database"></i> Modo demostración - No se pudo conectar al backend.
-                <br><small>Verifica que el backend esté corriendo en: ${API_BASE_URL}</small>
-            </div>`;
-            setTimeout(() => {
-                loadingDiv.style.display = 'none';
-            }, 2000);
+            loading.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-database"></i> Modo demostración — No se pudo conectar al backend.
+                    <br><small>Verificá que el backend esté corriendo en: ${API_BASE_URL}</small>
+                </div>`;
+            setTimeout(() => { loading.style.display = 'none'; }, 3000);
         }
     }
-    
+
     function displayOffers(offers) {
-        const loading = document.getElementById('loading');
         const container = document.getElementById('offers-container');
-        
-        loading.style.display = 'none';
         container.innerHTML = '';
-    
+
         if (!offers || offers.length === 0) {
             container.innerHTML = '<div class="error-message">No hay ofertas disponibles en este momento.</div>';
             return;
         }
-    
+
         offers.forEach((offer) => {
             const card = document.createElement('div');
             card.className = 'offer-card';
             card.onclick = () => openDetail(offer);
-            
-            const shortTitle = offer.oferta_texto && offer.oferta_texto.length > 50 
-                ? offer.oferta_texto.substring(0, 50) + '...' 
+
+            const shortTitle = offer.oferta_texto && offer.oferta_texto.length > 50
+                ? offer.oferta_texto.substring(0, 50) + '…'
                 : (offer.oferta_texto || 'Sin descripción');
-            
+
             card.innerHTML = `
                 <div class="offer-img">
-                    <img src="https://placehold.co/300x200/ffffff/0a0e1a?text=${encodeURIComponent(offer.servicio_nombre || 'PC')}" 
+                    <img src="https://placehold.co/300x200/ffffff/0a0e1a?text=${encodeURIComponent(offer.servicio_nombre || 'PC')}"
                          onerror="this.src='${FALLBACK_IMG}';">
                 </div>
                 <div class="offer-content">
                     <span class="badge">${offer.servicio_nombre || 'SERVICIO'}</span>
                     <h3 class="offer-title">${shortTitle}</h3>
-                    ${offer.precio && offer.precio != '0' ? `<div class="offer-price">$${parseInt(offer.precio).toLocaleString('es-AR')}</div>` : '<div class="offer-price">Consultar</div>'}
+                    ${offer.precio && offer.precio !== '0'
+                        ? `<div class="offer-price">$${parseInt(offer.precio).toLocaleString('es-AR')}</div>`
+                        : '<div class="offer-price">Consultar</div>'}
                 </div>`;
             container.appendChild(card);
         });
     }
-    
+
     // ======================== ENVÍO DE PEDIDO ========================
     document.getElementById('orderForm').onsubmit = async (e) => {
         e.preventDefault();
-        
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-        submitBtn.disabled = true;
-    
+
+        const submitBtn  = e.target.querySelector('button[type="submit"]');
+        const origHTML   = submitBtn.innerHTML;
+        submitBtn.innerHTML  = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        submitBtn.disabled   = true;
+
         const payload = {
-            nombre: document.getElementById('nombre').value.trim(),
-            apellido: document.getElementById('apellido').value.trim(),
-            whatsapp: document.getElementById('whatsapp').value.trim(),
-            direccion: document.getElementById('direccion').value.trim(),
-            localidad: document.getElementById('localidad').value.trim(),
-            provincia: document.getElementById('provincia').value,
+            nombre:        document.getElementById('nombre').value.trim(),
+            apellido:      document.getElementById('apellido').value.trim(),
+            whatsapp:      document.getElementById('whatsapp').value.trim(),
+            direccion:     document.getElementById('direccion').value.trim(),
+            localidad:     document.getElementById('localidad').value.trim(),
+            provincia:     document.getElementById('provincia').value,
             codigo_postal: document.getElementById('codigo_postal').value.trim(),
-            metodo_pago: document.getElementById('metodo_pago').value,
-            oferta_id: selectedOffer?.id || null,
-            oferta_texto: selectedOffer?.oferta_texto || ''
+            metodo_pago:   document.getElementById('metodo_pago').value,
+            oferta_id:     selectedOffer?.id    || null,
+            oferta_texto:  selectedOffer?.oferta_texto || ''
         };
-    
-        // Validación básica de WhatsApp (9 o 10 dígitos, sin 0 ni 15)
-        if (!payload.whatsapp.match(/^\d{9,10}$/)) {
-            alert('⚠️ El WhatsApp debe tener entre 9 y 10 dígitos, sin el 0 y sin el 15');
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
+
+        // Validación WhatsApp: 9 o 10 dígitos, sin 0 ni 15
+        if (!/^\d{9,10}$/.test(payload.whatsapp)) {
+            alert('⚠️ El WhatsApp debe tener entre 9 y 10 dígitos, sin el 0 y sin el 15.');
+            submitBtn.innerHTML = origHTML;
+            submitBtn.disabled  = false;
             return;
         }
-    
+
         try {
             const res = await fetch(`${API_BASE_URL}/clientes`, {
-                method: 'POST',
+                method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body:    JSON.stringify(payload)
             });
-    
+
             if (res.ok) {
-                const result = await res.json();
                 alert('✅ ¡Pedido registrado con éxito en MF Soluciones!\n\nTe contactaremos a la brevedad.');
                 modalForm.style.display = "none";
                 document.getElementById('orderForm').reset();
@@ -410,16 +412,17 @@
             }
         } catch (err) {
             console.error('Error de conexión:', err);
-            alert(`⚠️ Error de conexión con la API.\n\nAsegurate de que el backend esté corriendo en ${API_BASE_URL}\n\nModo demostración: Tus datos se habrían guardado así:\n${JSON.stringify(payload, null, 2)}`);
+            alert(`⚠️ Error de conexión con la API.\n\nAsegurate de que el backend esté corriendo en ${API_BASE_URL}`);
             modalForm.style.display = "none";
         } finally {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHTML;
+            submitBtn.disabled  = false;
         }
     };
-    
+
     // Iniciar carga al abrir la página
     window.onload = fetchOfertas;
 </script>
 </body>
 </html>
+
