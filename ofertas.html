@@ -249,31 +249,36 @@
             loading.style.display = 'none';
             container.innerHTML = '';
 
-            data.forEach(item => {
-                const imgSrc = item.imagen
-                    ? ASSETS_URL + item.imagen
-                    : FALLBACK_IMG;
+            data.forEach((item, index) => {
+    // Definimos el nombre de la imagen basado en la posición (0, 1, 2, 3, 4)
+    // Si hay más de 5 ofertas, volverá a empezar desde la primera imagen
+    const numImagen = index === 0 ? '' : index % 5; 
+    const nombreArchivo = `oferta_default${numImagen}.jpg`;
+    
+    // Construimos la URL completa usando la constante de config.js
+    const imgSrc = ASSETS_URL + nombreArchivo;
 
-                const card = document.createElement('div');
-                card.className = 'offer-card';
-                card.innerHTML = `
-                    <div class="offer-img">
-                        <img
-                            src="${imgSrc}"
-                            alt="Imagen Oferta"
-                            loading="eager"
-                            onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
-                        >
-                    </div>
-                    <div class="offer-content">
-                        <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
-                        <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
-                        ${item.precio && item.precio != '0' && item.precio != '0.00' ? `<div class="offer-price">$${item.precio}</div>` : ''}
-                        <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
-                            Expira: ${item.fecha_expiracion || 'Consultar'}
-                        </p>
-                    </div>
-                `;
+    const card = document.createElement('div');
+    card.className = 'offer-card';
+    card.innerHTML = `
+        <div class="offer-img">
+            <img 
+                src="${imgSrc}" 
+                alt="Imagen Oferta ${index}"
+                onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
+            >
+        </div>
+        <div class="offer-content">
+            <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
+            <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
+            ${item.precio && item.precio != '0' ? `<div class="offer-price">$${item.precio}</div>` : ''}
+            <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
+                Expira: ${item.fecha_expiracion || 'Consultar'}
+            </p>
+        </div>
+    `;
+    container.appendChild(card);
+});
                 container.appendChild(card);
             });
 
@@ -289,4 +294,3 @@
 
 </body>
 </html>
-
