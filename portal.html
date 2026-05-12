@@ -581,7 +581,10 @@
 </div>
 
 <script>
-const API = 'https://psychiatry-wake-prerequisite-breath.trycloudflare.com';
+// Guard de sesión — ponelo al inicio del script en portal.html
+if (!sessionStorage.getItem('nombre')) {
+    window.location.href = 'index.html';
+}
 
 // Recuperar nombre del sessionStorage
 const nombre = sessionStorage.getItem('nombre') || 'Admin';
