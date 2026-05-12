@@ -3,7 +3,7 @@
 //  ► Editá SOLO este archivo para cambiar el túnel
 // ══════════════════════════════════════════════════════
  
-const API_BASE_URL = 'https://psychiatry-wake-prerequisite-breath.trycloudflare.com'; // ✅ sin espacio al final
+const API_BASE_URL = 'https://manila-calzone-relic.ngrok-free.dev'; // ✅ sin espacio al final
  
 // Alias usado internamente por portal.html
 const API = API_BASE_URL;
