@@ -113,7 +113,7 @@
             color: var(--text); font-size: 32px; cursor: pointer; z-index: 10;
         }
 
-        /* ── BOTÓN Y FORMULARIO ── */
+        /* ── BOTONES Y FORMULARIOS ── */
         .btn-comprar {
             background: var(--green); color: white; border: none;
             padding: 14px 24px; border-radius: 8px; font-weight: 700;
@@ -161,9 +161,7 @@
 <div id="offerModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" id="closeDetail">&times;</span>
-        <div class="modal-img">
-            <img id="modalImg" src="" alt="Producto">
-        </div>
+        <div class="modal-img"><img id="modalImg" src=""></div>
         <div class="modal-info">
             <span class="badge" id="modalBadge"></span>
             <h2 id="modalTitle" style="color: var(--accent);"></h2>
@@ -189,11 +187,11 @@
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
                     <label>Nombre</label>
-                    <input type="text" id="nombre" required placeholder="Mariano">
+                    <input type="text" id="nombre" required placeholder="Ej: Mariano">
                 </div>
                 <div class="form-group" style="flex: 1;">
                     <label>Apellido</label>
-                    <input type="text" id="apellido" required placeholder="Fernandez">
+                    <input type="text" id="apellido" required placeholder="Ej: Fernandez">
                 </div>
             </div>
 
@@ -237,9 +235,7 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-comprar" style="width: 100%; margin-top: 10px;">
-                Confirmar Pedido
-            </button>
+            <button type="submit" class="btn-comprar">Confirmar Pedido</button>
         </form>
     </div>
 </div>
@@ -259,14 +255,14 @@
         if(e.target === modalForm) modalForm.style.display = "none";
     }
 
-    // Abrir Formulario desde el botón de comprar
+    // Botón para saltar del detalle al formulario
     document.getElementById('btnOpenForm').onclick = () => {
         modalDetail.style.display = "none";
         modalForm.style.display = "flex";
     };
 
     function openDetail(item, imgSrc) {
-        selectedOfferId = item.id;
+        selectedOfferId = item.id; // Vincula con el ID de la oferta
         document.getElementById('modalImg').src = imgSrc;
         document.getElementById('modalBadge').innerText = item.servicio_nombre || 'SERVICIO';
         document.getElementById('modalTitle').innerText = item.oferta_texto || 'Oferta Especial';
@@ -275,7 +271,7 @@
         modalDetail.style.display = "flex";
     }
 
-    // ── CARGA DE DATOS ──
+    // ── CARGA DINÁMICA DE OFERTAS ──
     async function fetchOfertas() {
         const loading = document.getElementById('loading');
         const container = document.getElementById('offers-container');
@@ -297,15 +293,12 @@
                 card.onclick = () => openDetail(item, imgSrc);
                 
                 card.innerHTML = `
-                    <div class="offer-img">
-                        <img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';">
-                    </div>
+                    <div class="offer-img"><img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';"></div>
                     <div class="offer-content">
                         <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
                         <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
                         ${item.precio && item.precio != '0' ? `<div class="offer-price">$${item.precio}</div>` : ''}
-                    </div>
-                `;
+                    </div>`;
                 container.appendChild(card);
             });
         } catch (error) {
@@ -314,11 +307,11 @@
         }
     }
 
-    // ── ENVÍO DE PEDIDO (CORREGIDO PARA DB) ──
+    // ── ENVÍO DE PEDIDO A LA TABLA CLIENTES_PEDIDOS ──
     document.getElementById('orderForm').onsubmit = async (e) => {
         e.preventDefault();
         
-        // Los nombres de las propiedades coinciden con las columnas de tu tabla clientes_pedidos
+        // El PAYLOAD coincide exactamente con las columnas de tu DBeaver
         const payload = {
             nombre: document.getElementById('nombre').value,
             apellido: document.getElementById('apellido').value,
@@ -328,7 +321,7 @@
             provincia: document.getElementById('provincia').value,
             codigo_postal: document.getElementById('codigo_postal').value,
             metodo_pago: document.getElementById('metodo_pago').value,
-            oferta_id: selectedOfferId
+            oferta_id: selectedOfferId // Clave foránea
         };
 
         try {
@@ -343,7 +336,8 @@
                 modalForm.style.display = "none";
                 document.getElementById('orderForm').reset();
             } else {
-                alert('Error al guardar el pedido. Revisa que tu servidor acepte estos campos.');
+                // Si falla aquí, revisa que el servidor acepte los campos apellido, localidad, etc.
+                alert('Error al guardar el pedido en el servidor. Verifica que los campos coincidan con la DB.');
             }
         } catch (err) {
             alert('Error de conexión con la API.');
