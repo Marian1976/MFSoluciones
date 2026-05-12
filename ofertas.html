@@ -41,19 +41,31 @@
             z-index: 100;
         }
 
-        .logo h1 { font-size: 18px; color: var(--accent); font-family: var(--font-mono); margin-bottom: 30px; }
-        .logo span { color: var(--text); }
+        .logo h1 {
+            font-size: 18px;
+            color: var(--accent);
+            font-family: var(--font-mono);
+            margin-bottom: 30px;
+        }
 
         .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px;
-            color: var(--muted); text-decoration: none; font-size: 14px;
-            transition: 0.3s; border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+            border-radius: 8px;
         }
+
         .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
         .nav-item.active { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
 
         /* ── MAIN ── */
         .main { margin-left: 240px; flex: 1; padding: 40px; }
+
         .header { margin-bottom: 40px; }
         .header h2 { font-size: 24px; font-weight: 700; }
         .header p { color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
@@ -71,77 +83,112 @@
             border-radius: 12px;
             overflow: hidden;
             transition: transform 0.2s;
-            cursor: pointer;
         }
+
         .offer-card:hover { transform: translateY(-5px); border-color: var(--accent); }
 
         .offer-img {
-            width: 100%; height: 180px; background: #fff;
-            display: flex; align-items: center; justify-content: center;
+            width: 100%;
+            height: 180px;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
-        .offer-img img { max-width: 90%; max-height: 90%; object-fit: contain; }
+
+        .offer-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
         .offer-content { padding: 20px; }
         .offer-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; min-height: 40px; }
-        .offer-price { font-family: var(--font-mono); font-size: 20px; color: var(--green); font-weight: 700; }
+        .offer-price {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            color: var(--green);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
 
         .badge {
-            background: rgba(0, 212, 255, 0.1); color: var(--accent);
-            padding: 4px 8px; border-radius: 4px; font-size: 11px;
-            font-family: var(--font-mono); display: inline-block; margin-bottom: 8px;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: var(--font-mono);
+            display: inline-block;
+            margin-bottom: 8px;
         }
 
         .loading { text-align: center; padding: 50px; color: var(--muted); }
+        .error { text-align: center; padding: 50px; color: #f87171; font-family: var(--font-mono); font-size: 13px; }
 
-        /* ── MODALES ── */
-        .modal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.85); z-index: 1000;
-            align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-content {
-            background: var(--surface); border: 1px solid var(--accent);
-            border-radius: 16px; max-width: 900px; width: 100%;
-            display: grid; grid-template-columns: 1.2fr 1fr; overflow: hidden;
-            position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
-        }
-        .modal-img { background: #fff; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .modal-img img { max-width: 100%; max-height: 500px; object-fit: contain; }
-        .modal-info { padding: 40px; display: flex; flex-direction: column; gap: 20px; }
-        .close-modal {
-            position: absolute; top: 20px; right: 20px;
-            color: var(--text); font-size: 32px; cursor: pointer; z-index: 10;
+        /* ── HAMBURGUESA (solo móvil) ── */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 200;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 13px;
+            cursor: pointer;
+            color: var(--accent);
+            font-size: 18px;
+            line-height: 1;
         }
 
-        /* ── BOTONES Y FORMULARIOS ── */
-        .btn-comprar {
-            background: var(--green); color: white; border: none;
-            padding: 14px 24px; border-radius: 8px; font-weight: 700;
-            cursor: pointer; font-family: var(--font); transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%;
+        /* ── OVERLAY ── */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 90;
         }
-        .btn-comprar:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .overlay.active { display: block; }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
-        .form-group input, .form-group select {
-            width: 100%; background: var(--surface2); border: 1px solid var(--border);
-            padding: 10px; color: white; border-radius: 6px; font-family: var(--font);
-        }
-
+        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
-            .modal-content { grid-template-columns: 1fr; }
-            .sidebar { display: none; }
-            .main { margin-left: 0; padding: 20px; }
-            .modal-img { height: 200px; }
+            .hamburger { display: block; }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.28s ease;
+            }
+            .sidebar.open { transform: translateX(0); }
+
+            .main {
+                margin-left: 0;
+                padding: 70px 16px 32px;
+            }
+
+            .offers-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="logo"><h1>MF<span>Soluciones</span></h1></div>
+<!-- Botón hamburguesa -->
+<button class="hamburger" id="menuBtn" aria-label="Abrir menú">
+    <i class="fas fa-bars" id="menuIcon"></i>
+</button>
+
+<!-- Overlay oscuro -->
+<div class="overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+    <div class="logo">
+        <h1>MF<span>Soluciones</span></h1>
+    </div>
     <nav>
         <a href="index.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
         <a href="ofertas.html" class="nav-item active"><i class="fas fa-tags"></i> Ofertas</a>
@@ -154,198 +201,92 @@
         <h2>Catálogo de Ofertas</h2>
         <p>// visualización de servicios activos</p>
     </div>
-    <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Conectando...</div>
+
+    <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Conectando con la base de datos...
+    </div>
+
     <div class="offers-grid" id="offers-container"></div>
-</div>
-
-<div id="offerModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" id="closeDetail">&times;</span>
-        <div class="modal-img"><img id="modalImg" src=""></div>
-        <div class="modal-info">
-            <span class="badge" id="modalBadge"></span>
-            <h2 id="modalTitle" style="color: var(--accent);"></h2>
-            <p id="modalDesc" style="line-height: 1.6; color: var(--muted);">Válido para la ciudad de Santa Fe. Consultar por envíos o instalación a domicilio.</p>
-            <div id="modalPrice" class="offer-price" style="font-size: 32px;"></div>
-            
-            <button id="btnOpenForm" class="btn-comprar">
-                <i class="fas fa-shopping-cart"></i> Iniciar Pedido
-            </button>
-            
-            <p id="modalDate" style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);"></p>
-        </div>
-    </div>
-</div>
-
-<div id="formModal" class="modal">
-    <div class="modal-content" style="grid-template-columns: 1fr; max-width: 550px; padding: 35px;">
-        <span class="close-modal" id="closeForm">&times;</span>
-        <h2 style="color: var(--accent); margin-bottom: 5px;">Finalizar Pedido</h2>
-        <p style="color: var(--muted); font-size: 13px; margin-bottom: 25px;">Completa tus datos para coordinar el envío o retiro.</p>
-        
-        <form id="orderForm">
-            <div style="display: flex; gap: 10px;">
-                <div class="form-group" style="flex: 1;">
-                    <label>Nombre</label>
-                    <input type="text" id="nombre" required placeholder="Ej: Mariano">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Apellido</label>
-                    <input type="text" id="apellido" required placeholder="Ej: Fernandez">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>WhatsApp (Sin el 0 y sin el 15)</label>
-                <input type="tel" id="whatsapp" required placeholder="3424123456">
-            </div>
-
-            <div class="form-group">
-                <label>Dirección (Calle y Altura)</label>
-                <input type="text" id="direccion" required placeholder="Av. Facundo Zuviría 1234">
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <div class="form-group" style="flex: 2;">
-                    <label>Localidad</label>
-                    <input type="text" id="localidad" required placeholder="Santa Fe">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>CP</label>
-                    <input type="text" id="codigo_postal" required placeholder="3000">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Provincia</label>
-                <select id="provincia">
-                    <option value="Santa Fe">Santa Fe</option>
-                    <option value="Entre Ríos">Entre Ríos</option>
-                    <option value="Córdoba">Córdoba</option>
-                    <option value="Buenos Aires">Buenos Aires</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Método de Pago</label>
-                <select id="metodo_pago">
-                    <option value="Transferencia">Transferencia Bancaria</option>
-                    <option value="Efectivo">Efectivo al recibir</option>
-                    <option value="Tarjeta">Tarjeta (Link de pago)</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn-comprar">Confirmar Pedido</button>
-        </form>
-    </div>
 </div>
 
 <script src="config.js"></script>
 <script>
-    const modalDetail = document.getElementById('offerModal');
-    const modalForm = document.getElementById('formModal');
-    let selectedOfferId = null;
+    // ► La URL del túnel y los assets se leen desde config.js — no toques este archivo
 
-    // ── GESTIÓN DE MODALES ──
-    document.getElementById('closeDetail').onclick = () => modalDetail.style.display = "none";
-    document.getElementById('closeForm').onclick = () => modalForm.style.display = "none";
-    
-    window.onclick = (e) => { 
-        if(e.target === modalDetail) modalDetail.style.display = "none";
-        if(e.target === modalForm) modalForm.style.display = "none";
+    // ── Menú hamburguesa ──
+    const menuBtn  = document.getElementById('menuBtn');
+    const sidebar  = document.getElementById('sidebar');
+    const overlay  = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+
+    function toggleMenu() {
+        const open = sidebar.classList.toggle('open');
+        overlay.classList.toggle('active', open);
+        menuIcon.className = open ? 'fas fa-times' : 'fas fa-bars';
     }
 
-    // Botón para saltar del detalle al formulario
-    document.getElementById('btnOpenForm').onclick = () => {
-        modalDetail.style.display = "none";
-        modalForm.style.display = "flex";
-    };
+    menuBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
 
-    function openDetail(item, imgSrc) {
-        selectedOfferId = item.id; // Vincula con el ID de la oferta
-        document.getElementById('modalImg').src = imgSrc;
-        document.getElementById('modalBadge').innerText = item.servicio_nombre || 'SERVICIO';
-        document.getElementById('modalTitle').innerText = item.oferta_texto || 'Oferta Especial';
-        document.getElementById('modalPrice').innerText = item.precio && item.precio != '0' ? `$${item.precio}` : 'Consultar';
-        document.getElementById('modalDate').innerText = `Expira: ${item.fecha_expiracion || 'Consultar'}`;
-        modalDetail.style.display = "flex";
-    }
+    // Cerrar menú al tocar un link
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', () => {
+            if (sidebar.classList.contains('open')) toggleMenu();
+        });
+    });
 
-    // ── CARGA DINÁMICA DE OFERTAS ──
+    // ── API — valores definidos en config.js ──
+
     async function fetchOfertas() {
-        const loading = document.getElementById('loading');
+        const loading   = document.getElementById('loading');
         const container = document.getElementById('offers-container');
 
         try {
-            const response = await fetch(`${API}/ofertas`); 
+            const response = await fetch(`${API_BASE_URL}/ofertas`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
-            
+
             loading.style.display = 'none';
             container.innerHTML = '';
 
-            data.forEach((item, index) => {
-                const num = index % 5 === 0 ? '' : index % 5; 
-                const imgSrc = ASSETS_URL + `oferta_default${num}.jpg`;
+            data.forEach(item => {
+                const imgSrc = item.imagen
+                    ? ASSETS_URL + item.imagen
+                    : FALLBACK_IMG;
 
                 const card = document.createElement('div');
                 card.className = 'offer-card';
-                card.onclick = () => openDetail(item, imgSrc);
-                
                 card.innerHTML = `
-                    <div class="offer-img"><img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';"></div>
+                    <div class="offer-img">
+                        <img
+                            src="${imgSrc}"
+                            alt="Imagen Oferta"
+                            loading="eager"
+                            onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
+                        >
+                    </div>
                     <div class="offer-content">
                         <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
                         <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
-                        ${item.precio && item.precio != '0' ? `<div class="offer-price">$${item.precio}</div>` : ''}
-                    </div>`;
+                        <div class="offer-price">$${item.precio || '0.00'}</div>
+                        <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
+                            Expira: ${item.fecha_expiracion || 'Consultar'}
+                        </p>
+                    </div>
+                `;
                 container.appendChild(card);
             });
+
         } catch (error) {
-            console.error('Error:', error);
-            loading.innerHTML = `<span style="color:#f87171">Error al conectar con la base de datos de MF Soluciones.</span>`;
+            console.error('Error al cargar ofertas:', error);
+            loading.className = 'error';
+            loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar con la API.<br><small>${error.message}</small>`;
         }
     }
 
-    // ── ENVÍO DE PEDIDO A LA TABLA CLIENTES_PEDIDOS ──
-    document.getElementById('orderForm').onsubmit = async (e) => {
-        e.preventDefault();
-        
-        // El PAYLOAD coincide exactamente con las columnas de tu DBeaver
-        const payload = {
-            nombre: document.getElementById('nombre').value,
-            apellido: document.getElementById('apellido').value,
-            whatsapp: document.getElementById('whatsapp').value,
-            direccion: document.getElementById('direccion').value,
-            localidad: document.getElementById('localidad').value,
-            provincia: document.getElementById('provincia').value,
-            codigo_postal: document.getElementById('codigo_postal').value,
-            metodo_pago: document.getElementById('metodo_pago').value,
-            oferta_id: selectedOfferId // Clave foránea
-        };
-
-        try {
-            const res = await fetch(`${API}/clientes`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                alert('¡Excelente! Pedido registrado con éxito en MF Soluciones.');
-                modalForm.style.display = "none";
-                document.getElementById('orderForm').reset();
-            } else {
-                // Si falla aquí, revisa que el servidor acepte los campos apellido, localidad, etc.
-                alert('Error al guardar el pedido en el servidor. Verifica que los campos coincidan con la DB.');
-            }
-        } catch (err) {
-            alert('Error de conexión con la API.');
-        }
-    };
-
     window.onload = fetchOfertas;
 </script>
+
 </body>
 </html>
 
