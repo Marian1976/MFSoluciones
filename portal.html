@@ -580,9 +580,8 @@
     <span id="toast-msg"></span>
 </div>
 
-<script src="config.js"></script>
 <script>
-// ► La URL del túnel se lee desde config.js — no toques este archivo
+const API = 'https://upgrade-plain-programs-defendant.trycloudflare.com';
 
 // Recuperar nombre del sessionStorage
 const nombre = sessionStorage.getItem('nombre') || 'Admin';
@@ -665,13 +664,7 @@ async function loadSection(name) {
 }
 
 async function apiFetch(path, opts = {}) {
-    const res = await fetch(API + path, {
-        headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
-        },
-        ...opts
-    });
+    const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...opts });
     return res.json();
 }
 
@@ -818,8 +811,7 @@ function openAddModal(name) {
         ofertas: `
             <div class="form-group"><label class="form-label">Nombre del servicio</label><input class="form-input" id="f-servicio_nombre"></div>
             <div class="form-group"><label class="form-label">Texto de la oferta</label><input class="form-input" id="f-oferta_texto"></div>
-            <div class="form-group"><label class="form-label">Fecha de expiración</label><input class="form-input" id="f-fecha_expiracion" type="date"></div>
-            <div class="form-group"><label class="form-label">Imagen (nombre del archivo en GitHub, ej: oferta1.jpg)</label><input class="form-input" id="f-imagen" placeholder="oferta_default.jpg"></div>`,
+            <div class="form-group"><label class="form-label">Fecha de expiración</label><input class="form-input" id="f-fecha_expiracion" type="date"></div>`,
         flujos: `
             <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="f-nombre"></div>
             <div class="form-group"><label class="form-label">Descripción</label><input class="form-input" id="f-descripcion"></div>
@@ -837,7 +829,7 @@ async function submitAdd(name) {
     const fields = {
         socios: ['socio','nombre','documento','entidad','nro_legajo','cra','sepelio','salud','movil','correo'],
         hardware: ['componente','detalle','fecha_instalacion'],
-        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion','imagen'],
+        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion'],
         flujos: ['nombre','descripcion','precio','archivo_json_path']
     };
 
@@ -862,7 +854,7 @@ function openEditModal(name, record) {
     const fields = {
         socios: ['nombre','documento','entidad','nro_legajo','cra','sepelio','salud','movil','correo'],
         hardware: ['componente','detalle','fecha_instalacion'],
-        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion','imagen'],
+        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion'],
         flujos: ['nombre','descripcion','precio','archivo_json_path']
     };
 
@@ -892,7 +884,7 @@ async function submitEdit(name, id) {
     const fields = {
         socios: ['nombre','documento','entidad','nro_legajo','cra','sepelio','salud','movil','correo'],
         hardware: ['componente','detalle','fecha_instalacion'],
-        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion','imagen'],
+        ofertas: ['servicio_nombre','oferta_texto','fecha_expiracion'],
         flujos: ['nombre','descripcion','precio','archivo_json_path']
     };
 
