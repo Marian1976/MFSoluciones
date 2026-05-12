@@ -4,7 +4,7 @@
 //  ► Editá SOLO este archivo para cambiar el túnel
 // ══════════════════════════════════════════════════════
 
-const API_BASE_URL = 'https://manila-calzone-relic.ngrok-free.dev ';
+const API_BASE_URL = 'https://manila-calzone-relic.ngrok-free.dev';
 
 // Alias usado internamente por portal.html
 const API = API_BASE_URL;
