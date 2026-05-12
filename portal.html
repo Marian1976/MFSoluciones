@@ -581,10 +581,7 @@
 </div>
 
 <script>
-// Guard de sesión — ponelo al inicio del script en portal.html
-if (!sessionStorage.getItem('nombre')) {
-    window.location.href = 'index.html';
-}
+const API = 'https://upgrade-plain-programs-defendant.trycloudflare.com';
 
 // Recuperar nombre del sessionStorage
 const nombre = sessionStorage.getItem('nombre') || 'Admin';
