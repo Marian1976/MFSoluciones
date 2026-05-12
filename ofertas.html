@@ -30,7 +30,6 @@
             min-height: 100vh;
         }
 
-        /* ── SIDEBAR ── */
         .sidebar {
             width: 240px;
             background: var(--surface);
@@ -63,14 +62,12 @@
         .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
         .nav-item.active { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
 
-        /* ── MAIN ── */
         .main { margin-left: 240px; flex: 1; padding: 40px; }
 
         .header { margin-bottom: 40px; }
         .header h2 { font-size: 24px; font-weight: 700; }
         .header p { color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
 
-        /* ── GRID ── */
         .offers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -127,7 +124,6 @@
         .loading { text-align: center; padding: 50px; color: var(--muted); }
         .error { text-align: center; padding: 50px; color: #f87171; font-family: var(--font-mono); font-size: 13px; }
 
-        /* ── HAMBURGUESA (solo móvil) ── */
         .hamburger {
             display: none;
             position: fixed;
@@ -141,10 +137,8 @@
             cursor: pointer;
             color: var(--accent);
             font-size: 18px;
-            line-height: 1;
         }
 
-        /* ── OVERLAY ── */
         .overlay {
             display: none;
             position: fixed;
@@ -154,41 +148,22 @@
         }
         .overlay.active { display: block; }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
             .hamburger { display: block; }
-
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.28s ease;
-            }
+            .sidebar { transform: translateX(-100%); transition: transform 0.28s ease; }
             .sidebar.open { transform: translateX(0); }
-
-            .main {
-                margin-left: 0;
-                padding: 70px 16px 32px;
-            }
-
-            .offers-grid {
-                grid-template-columns: 1fr;
-            }
+            .main { margin-left: 0; padding: 70px 16px 32px; }
+            .offers-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<!-- Botón hamburguesa -->
-<button class="hamburger" id="menuBtn" aria-label="Abrir menú">
-    <i class="fas fa-bars" id="menuIcon"></i>
-</button>
-
-<!-- Overlay oscuro -->
+<button class="hamburger" id="menuBtn"><i class="fas fa-bars" id="menuIcon"></i></button>
 <div class="overlay" id="overlay"></div>
 
 <div class="sidebar" id="sidebar">
-    <div class="logo">
-        <h1>MF<span>Soluciones</span></h1>
-    </div>
+    <div class="logo"><h1>MF<span>Soluciones</span></h1></div>
     <nav>
         <a href="index.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
         <a href="ofertas.html" class="nav-item active"><i class="fas fa-tags"></i> Ofertas</a>
@@ -201,47 +176,27 @@
         <h2>Catálogo de Ofertas</h2>
         <p>// visualización de servicios activos</p>
     </div>
-
-    <div id="loading" class="loading">
-        <i class="fas fa-spinner fa-spin"></i> Conectando con la base de datos...
-    </div>
-
+    <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Conectando con la base de datos...</div>
     <div class="offers-grid" id="offers-container"></div>
 </div>
 
 <script src="config.js"></script>
 <script>
-    // ► La URL del túnel y los assets se leen desde config.js — no toques este archivo
-
-    // ── Menú hamburguesa ──
-    const menuBtn  = document.getElementById('menuBtn');
-    const sidebar  = document.getElementById('sidebar');
-    const overlay  = document.getElementById('overlay');
-    const menuIcon = document.getElementById('menuIcon');
+    // Menú Responsive
+    const menuBtn = document.getElementById('menuBtn'), sidebar = document.getElementById('sidebar'), 
+          overlay = document.getElementById('overlay'), menuIcon = document.getElementById('menuIcon');
 
     function toggleMenu() {
         const open = sidebar.classList.toggle('open');
         overlay.classList.toggle('active', open);
         menuIcon.className = open ? 'fas fa-times' : 'fas fa-bars';
     }
-
-    menuBtn.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', toggleMenu);
-
-    // Cerrar menú al tocar un link
-    document.querySelectorAll('.nav-item').forEach(link => {
-        link.addEventListener('click', () => {
-            if (sidebar.classList.contains('open')) toggleMenu();
-        });
-    });
-
-    // ── API — valores definidos en config.js ──
+    menuBtn.onclick = overlay.onclick = toggleMenu;
 
     async function fetchOfertas() {
-        const loading   = document.getElementById('loading');
-        const container = document.getElementById('offers-container');
-
+        const loading = document.getElementById('loading'), container = document.getElementById('offers-container');
         try {
+            // USAMOS API_BASE_URL de config.js
             const response = await fetch(`${API_BASE_URL}/ofertas`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
@@ -250,42 +205,25 @@
             container.innerHTML = '';
 
             data.forEach(item => {
-                const imgSrc = item.imagen
-                    ? ASSETS_URL + item.imagen
-                    : FALLBACK_IMG;
-
+                const imgSrc = item.imagen ? ASSETS_URL + item.imagen : FALLBACK_IMG;
                 const card = document.createElement('div');
                 card.className = 'offer-card';
                 card.innerHTML = `
-                    <div class="offer-img">
-                        <img
-                            src="${imgSrc}"
-                            alt="Imagen Oferta"
-                            loading="eager"
-                            onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
-                        >
-                    </div>
+                    <div class="offer-img"><img src="${imgSrc}" onerror="this.src='${FALLBACK_IMG}';"></div>
                     <div class="offer-content">
                         <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
                         <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
                         <div class="offer-price">$${item.precio || '0.00'}</div>
-                        <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
-                            Expira: ${item.fecha_expiracion || 'Consultar'}
-                        </p>
-                    </div>
-                `;
+                        <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">Expira: ${item.fecha_expiracion || 'Consultar'}</p>
+                    </div>`;
                 container.appendChild(card);
             });
-
         } catch (error) {
-            console.error('Error al cargar ofertas:', error);
             loading.className = 'error';
-            loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar con la API.<br><small>${error.message}</small>`;
+            loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error en túnel API.<br><small>${error.message}</small>`;
         }
     }
-
     window.onload = fetchOfertas;
 </script>
-
 </body>
 </html>
