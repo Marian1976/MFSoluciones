@@ -665,7 +665,13 @@ async function loadSection(name) {
 }
 
 async function apiFetch(path, opts = {}) {
-    const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+    const res = await fetch(API + path, {
+        headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+        },
+        ...opts
+    });
     return res.json();
 }
 
