@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>MF Soluciones | Ofertas</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -90,7 +90,12 @@
             font-family: var(--font-mono); display: inline-block; margin-bottom: 12px;
         }
 
-        .loading { text-align: center; padding: 60px; color: var(--muted); }
+        .info-message {
+            text-align: center; padding: 20px; background: rgba(0,212,255,0.1);
+            border-radius: 12px; margin-bottom: 30px; color: var(--accent);
+            font-size: 14px;
+        }
+
         .error-message { text-align: center; padding: 60px; color: var(--red); background: rgba(239,68,68,0.1); border-radius: 12px; }
 
         .modal {
@@ -146,6 +151,8 @@
             .modal-info { padding: 24px; }
         }
     </style>
+    <!-- Importar configuración global (API_BASE_URL, ASSETS_URL, etc.) -->
+    <script src="config.js"></script>
 </head>
 <body>
 
@@ -163,7 +170,9 @@
         <h2>Catálogo de Ofertas</h2>
         <p>// servicios y promociones activas</p>
     </div>
-    <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando ofertas...</div>
+    <div id="demoWarning" class="info-message" style="display: none;">
+        <i class="fas fa-database"></i> Modo demostración — Usando ofertas de ejemplo (backend no disponible)
+    </div>
     <div class="offers-grid" id="offers-container"></div>
 </div>
 
@@ -254,13 +263,13 @@
 </div>
 
 <script>
-    // ======================== CONFIGURACIÓN ========================
-    const API_BASE_URL = 'http://localhost:8000';
-    const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
-    const DEFAULT_IMAGE = GITHUB_RAW_BASE + 'oferta_default.jpg';  // Imagen por defecto en GitHub
+    // ======================== CONFIGURACIÓN (heredada de config.js) ========================
+    // Asegurarse de que API_BASE_URL esté definida (fallback por si no carga config.js)
+    const API_URL = (typeof API_BASE_URL !== 'undefined') ? API_BASE_URL : 'https://buried-revision-opera-waiting.trycloudflare.com';
+    const ASSETS_URL = (typeof ASSETS_URL !== 'undefined') ? ASSETS_URL : 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
+    const DEFAULT_IMAGE = (typeof FALLBACK_IMG !== 'undefined') ? FALLBACK_IMG : ASSETS_URL + 'oferta_default.jpg';
     
-    // Datos de ejemplo para modo demostración (sin backend)
-    // Nota: el campo 'imagen' debe coincidir con el nombre del archivo en el repo de GitHub
+    // OFERTAS DE EJEMPLO (solo se muestran si el backend falla)
     const SAMPLE_OFFERS = [
         { 
             id: 1, 
@@ -268,7 +277,7 @@
             oferta_texto: "AMD Ryzen 5 3400G + Motherboard + Cooler", 
             precio: "600000", 
             fecha_expiracion: "2025-12-31",
-            imagen: "ryzen_3400g.jpg"        // Cambiá por el nombre real que hayas subido a GitHub
+            imagen: "ryzen_3400g.jpg"
         },
         { 
             id: 2, 
@@ -296,88 +305,17 @@
         }
     ];
 
-    // ======================== FUNCIONES AUXILIARES ========================
-    // Construye la URL completa de la imagen a partir del nombre guardado en BD
+    let selectedOffer = null;
+
+    // Helper: construir URL de imagen
     function getImageUrl(imagenField) {
         if (imagenField && typeof imagenField === 'string' && imagenField.trim() !== '') {
-            return GITHUB_RAW_BASE + imagenField.trim();
+            return ASSETS_URL + imagenField.trim();
         }
         return DEFAULT_IMAGE;
     }
 
-    // ======================== DOM ELEMENTS ========================
-    const modalDetail = document.getElementById('offerModal');
-    const modalForm   = document.getElementById('formModal');
-    let selectedOffer = null;
-
-    // ======================== MODALES ========================
-    document.getElementById('closeDetail').onclick = () => modalDetail.style.display = "none";
-    document.getElementById('closeForm').onclick   = () => modalForm.style.display   = "none";
-
-    window.onclick = (e) => {
-        if (e.target === modalDetail) modalDetail.style.display = "none";
-        if (e.target === modalForm)   modalForm.style.display   = "none";
-    };
-
-    document.getElementById('btnOpenForm').onclick = () => {
-        modalDetail.style.display = "none";
-        modalForm.style.display   = "flex";
-    };
-
-    // Abre el modal de detalle con la información de la oferta seleccionada
-    function openDetail(offer) {
-        selectedOffer = offer;
-        const imgUrl = getImageUrl(offer.imagen);
-        document.getElementById('modalImg').src = imgUrl;
-        document.getElementById('modalBadge').innerText = offer.servicio_nombre || 'SERVICIO';
-        document.getElementById('modalTitle').innerText = offer.oferta_texto || 'Oferta Especial';
-        
-        let priceDisplay = 'Consultar';
-        if (offer.precio && offer.precio !== '0') {
-            const numericPrice = parseFloat(offer.precio);
-            if (!isNaN(numericPrice)) {
-                priceDisplay = `$${numericPrice.toLocaleString('es-AR')}`;
-            }
-        }
-        document.getElementById('modalPrice').innerHTML = priceDisplay;
-        
-        document.getElementById('modalDate').innerHTML = offer.fecha_expiracion
-            ? `📅 Expira: ${new Date(offer.fecha_expiracion).toLocaleDateString('es-AR')}`
-            : '📅 Vigencia indefinida';
-        
-        modalDetail.style.display = "flex";
-    }
-
-    // ======================== CARGA DE OFERTAS ========================
-    async function fetchOfertas() {
-        const loading   = document.getElementById('loading');
-        const container = document.getElementById('offers-container');
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/ofertas`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                displayOffers(data);
-                loading.style.display = 'none';
-            } else {
-                throw new Error(`API respondió con ${response.status}`);
-            }
-        } catch (error) {
-            console.warn('Error conectando a API, usando datos de ejemplo:', error);
-            displayOffers(SAMPLE_OFFERS);
-            loading.innerHTML = `
-                <div class="error-message">
-                    <i class="fas fa-database"></i> Modo demostración — No se pudo conectar al backend.
-                    <br><small>Verificá que el backend esté corriendo en: ${API_BASE_URL}</small>
-                </div>`;
-            setTimeout(() => { loading.style.display = 'none'; }, 3000);
-        }
-    }
-
+    // Mostrar ofertas en el grid
     function displayOffers(offers) {
         const container = document.getElementById('offers-container');
         container.innerHTML = '';
@@ -396,7 +334,6 @@
                 ? offer.oferta_texto.substring(0, 50) + '…'
                 : (offer.oferta_texto || 'Sin descripción');
 
-            // Obtener URL de la imagen (usando el campo 'imagen' de la BD)
             const imgUrl = getImageUrl(offer.imagen);
 
             let priceHtml = '<div class="offer-price">Consultar</div>';
@@ -420,7 +357,67 @@
         });
     }
 
-    // Simple escape para prevenir XSS
+    // Abrir modal de detalle
+    function openDetail(offer) {
+        selectedOffer = offer;
+        const imgUrl = getImageUrl(offer.imagen);
+        document.getElementById('modalImg').src = imgUrl;
+        document.getElementById('modalBadge').innerText = offer.servicio_nombre || 'SERVICIO';
+        document.getElementById('modalTitle').innerText = offer.oferta_texto || 'Oferta Especial';
+        
+        let priceDisplay = 'Consultar';
+        if (offer.precio && offer.precio !== '0') {
+            const numericPrice = parseFloat(offer.precio);
+            if (!isNaN(numericPrice)) {
+                priceDisplay = `$${numericPrice.toLocaleString('es-AR')}`;
+            }
+        }
+        document.getElementById('modalPrice').innerHTML = priceDisplay;
+        
+        document.getElementById('modalDate').innerHTML = offer.fecha_expiracion
+            ? `📅 Expira: ${new Date(offer.fecha_expiracion).toLocaleDateString('es-AR')}`
+            : '📅 Vigencia indefinida';
+        
+        document.getElementById('offerModal').style.display = "flex";
+    }
+
+    // Cargar ofertas desde el backend real (usando API_URL definida en config.js)
+    async function fetchOfertas() {
+        const demoWarning = document.getElementById('demoWarning');
+        
+        // Mostramos las ofertas de ejemplo inmediatamente para que la página no se vea vacía
+        displayOffers(SAMPLE_OFFERS);
+        
+        // Intentamos conectar al backend
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
+            
+            const response = await fetch(`${API_URL}/ofertas`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    displayOffers(data);
+                    demoWarning.style.display = 'none';
+                } else {
+                    demoWarning.style.display = 'flex';
+                }
+            } else {
+                throw new Error(`HTTP ${response.status}`);
+            }
+        } catch (error) {
+            console.warn('Backend no disponible, usando ofertas de ejemplo:', error);
+            demoWarning.style.display = 'flex';
+        }
+    }
+
+    // Escapar HTML para prevenir XSS
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -431,34 +428,33 @@
         });
     }
 
-    // ======================== ENVÍO DE PEDIDO ========================
+    // Envío de pedido (usa API_URL)
     document.getElementById('orderForm').onsubmit = async (e) => {
         e.preventDefault();
 
-        // Validación de WhatsApp: al menos 8 dígitos
-        let rawWhatsapp = document.getElementById('whatsapp').value.trim();
+        const rawWhatsapp = document.getElementById('whatsapp').value.trim();
         const digitsOnly = rawWhatsapp.replace(/\D/g, '');
         if (digitsOnly.length < 8) {
             alert('⚠️ El número de WhatsApp debe tener al menos 8 dígitos. Podés incluir el código de país (54 o 549).');
             return;
         }
 
-        const submitBtn  = e.target.querySelector('button[type="submit"]');
-        const origHTML   = submitBtn.innerHTML;
-        submitBtn.innerHTML  = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-        submitBtn.disabled   = true;
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const origHTML = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        submitBtn.disabled = true;
 
         const payload = {
-            nombre:        document.getElementById('nombre').value.trim(),
-            apellido:      document.getElementById('apellido').value.trim(),
-            whatsapp:      rawWhatsapp,
-            direccion:     document.getElementById('direccion').value.trim(),
-            localidad:     document.getElementById('localidad').value.trim(),
-            provincia:     document.getElementById('provincia').value,
+            nombre: document.getElementById('nombre').value.trim(),
+            apellido: document.getElementById('apellido').value.trim(),
+            whatsapp: rawWhatsapp,
+            direccion: document.getElementById('direccion').value.trim(),
+            localidad: document.getElementById('localidad').value.trim(),
+            provincia: document.getElementById('provincia').value,
             codigo_postal: document.getElementById('codigo_postal').value.trim(),
-            metodo_pago:   document.getElementById('metodo_pago').value,
-            oferta_id:     selectedOffer?.id || null,
-            oferta_texto:  selectedOffer?.oferta_texto || ''
+            metodo_pago: document.getElementById('metodo_pago').value,
+            oferta_id: selectedOffer?.id || null,
+            oferta_texto: selectedOffer?.oferta_texto || ''
         };
 
         if (!payload.nombre || !payload.apellido || !payload.direccion || !payload.localidad || !payload.codigo_postal) {
@@ -469,36 +465,47 @@
         }
 
         try {
-            const res = await fetch(`${API_BASE_URL}/clientes`, {
-                method:  'POST',
+            const res = await fetch(`${API_URL}/clientes`, {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(payload)
+                body: JSON.stringify(payload)
             });
 
             if (res.ok) {
                 alert('✅ ¡Pedido registrado con éxito en MF Soluciones!\n\nTe contactaremos a la brevedad.');
-                modalForm.style.display = "none";
+                document.getElementById('formModal').style.display = "none";
                 document.getElementById('orderForm').reset();
             } else {
                 let errorMsg = `Error ${res.status}`;
                 try {
                     const errorData = await res.json();
                     errorMsg = errorData.mensaje || errorData.error || errorMsg;
-                } catch (err) { /* ignore */ }
-                alert(`❌ No se pudo guardar el pedido: ${errorMsg}\n\nVerificá que el backend esté corriendo correctamente.`);
+                } catch (err) { }
+                alert(`❌ No se pudo guardar el pedido: ${errorMsg}\n\nVerificá que el backend esté corriendo y la URL sea correcta: ${API_URL}`);
             }
         } catch (err) {
             console.error('Error de conexión:', err);
-            alert(`⚠️ Error de conexión con la API.\n\nAsegurate de que el backend esté corriendo en ${API_BASE_URL}`);
-            modalForm.style.display = "none";
+            alert(`⚠️ No se pudo conectar al servidor de pedidos.\n\nURL utilizada: ${API_URL}\n\nPor ahora, podés contactarnos directamente por WhatsApp.`);
         } finally {
             submitBtn.innerHTML = origHTML;
-            submitBtn.disabled  = false;
+            submitBtn.disabled = false;
         }
     };
 
-    // Iniciar la carga al abrir la página
-    window.onload = fetchOfertas;
+    // Eventos de cierre de modales
+    document.getElementById('closeDetail').onclick = () => document.getElementById('offerModal').style.display = "none";
+    document.getElementById('closeForm').onclick = () => document.getElementById('formModal').style.display = "none";
+    window.onclick = (e) => {
+        if (e.target === document.getElementById('offerModal')) document.getElementById('offerModal').style.display = "none";
+        if (e.target === document.getElementById('formModal')) document.getElementById('formModal').style.display = "none";
+    };
+    document.getElementById('btnOpenForm').onclick = () => {
+        document.getElementById('offerModal').style.display = "none";
+        document.getElementById('formModal').style.display = "flex";
+    };
+
+    // Iniciar carga
+    fetchOfertas();
 </script>
 </body>
 </html>
