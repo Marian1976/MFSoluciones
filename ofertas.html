@@ -75,7 +75,7 @@
         .offer-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 25px -5px rgba(0,212,255,0.1); }
 
         .offer-img {
-            width: 100%; height: 200px; background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+            width: 100%; height: 200px; background: linear-gradient(135deg, #111827 0%, #1a2236 100%);
             display: flex; align-items: center; justify-content: center;
         }
         .offer-img img { max-width: 85%; max-height: 85%; object-fit: contain; }
@@ -104,7 +104,7 @@
             display: grid; grid-template-columns: 1.2fr 1fr; overflow: hidden;
             position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        .modal-img { background: #fff; display: flex; align-items: center; justify-content: center; padding: 30px; min-height: 400px; }
+        .modal-img { background: #fff; display: flex; align-items: center; justify-content: center; padding: 30px; min-height: 400px; background: #fefefe; }
         .modal-img img { max-width: 100%; max-height: 400px; object-fit: contain; }
         .modal-info { padding: 40px; display: flex; flex-direction: column; gap: 20px; }
         .close-modal {
@@ -133,6 +133,9 @@
         }
         .form-group input:focus, .form-group select:focus {
             outline: none; border-color: var(--accent);
+        }
+        .help-text {
+            font-size: 11px; color: var(--muted); margin-top: 5px;
         }
 
         @media (max-width: 768px) {
@@ -202,8 +205,9 @@
             </div>
 
             <div class="form-group">
-                <label>WhatsApp (Sin 0 ni 15) *</label>
-                <input type="tel" id="whatsapp" required placeholder="3424787347">
+                <label>WhatsApp (incluí 54 o 549 si querés) *</label>
+                <input type="tel" id="whatsapp" required placeholder="3424787347 o 5493424787347">
+                <div class="help-text">Ejemplo: 3424787347 o 5493424787347. Nosotros normalizamos el número.</div>
             </div>
 
             <div class="form-group">
@@ -251,20 +255,57 @@
 
 <script>
     // ======================== CONFIGURACIÓN ========================
-    // FIX: si el backend corre en otro servidor cambiá esta URL por la IP/dominio real.
-    // Ejemplo producción: const API_BASE_URL = 'http://192.168.1.100:8000';
     const API_BASE_URL = 'http://localhost:8000';
-
-    const FALLBACK_IMG = 'https://placehold.co/400x300/1a2236/00d4ff?text=MF+Soluciones';
-
+    const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/Marian1976/MFSoluciones/main/';
+    const DEFAULT_IMAGE = GITHUB_RAW_BASE + 'oferta_default.jpg';  // Imagen por defecto en GitHub
+    
+    // Datos de ejemplo para modo demostración (sin backend)
+    // Nota: el campo 'imagen' debe coincidir con el nombre del archivo en el repo de GitHub
     const SAMPLE_OFFERS = [
-        { id: 1, servicio_nombre: "AMD Ryzen",  oferta_texto: "AMD Ryzen 5 3400G + Motherboard",          precio: "600000", fecha_expiracion: "2025-12-31" },
-        { id: 2, servicio_nombre: "Intel Core", oferta_texto: "Intel i7 10700K + Motherboard + 16GB RAM",  precio: "850000", fecha_expiracion: "2025-12-31" },
-        { id: 3, servicio_nombre: "Notebook",   oferta_texto: "Notebook Lenovo ThinkPad + Mochila",        precio: "450000", fecha_expiracion: "2025-12-31" },
-        { id: 4, servicio_nombre: "Monitor",    oferta_texto: 'Monitor 24" Full HD + Teclado Mecánico',    precio: "180000", fecha_expiracion: "2025-12-31" }
+        { 
+            id: 1, 
+            servicio_nombre: "AMD Ryzen", 
+            oferta_texto: "AMD Ryzen 5 3400G + Motherboard + Cooler", 
+            precio: "600000", 
+            fecha_expiracion: "2025-12-31",
+            imagen: "ryzen_3400g.jpg"        // Cambiá por el nombre real que hayas subido a GitHub
+        },
+        { 
+            id: 2, 
+            servicio_nombre: "Intel Core", 
+            oferta_texto: "Intel i7 10700K + Motherboard Z490 + 16GB RAM", 
+            precio: "850000", 
+            fecha_expiracion: "2025-12-31",
+            imagen: "intel_i7.jpg"
+        },
+        { 
+            id: 3, 
+            servicio_nombre: "Notebook", 
+            oferta_texto: "Notebook Lenovo ThinkPad + Mochila + Mouse", 
+            precio: "450000", 
+            fecha_expiracion: "2025-12-31",
+            imagen: "notebook_lenovo.jpg"
+        },
+        { 
+            id: 4, 
+            servicio_nombre: "Monitor", 
+            oferta_texto: 'Monitor 24" Full HD + Teclado Mecánico', 
+            precio: "180000", 
+            fecha_expiracion: "2025-12-31",
+            imagen: "monitor_24.jpg"
+        }
     ];
 
-    // ======================== ELEMENTOS DOM ========================
+    // ======================== FUNCIONES AUXILIARES ========================
+    // Construye la URL completa de la imagen a partir del nombre guardado en BD
+    function getImageUrl(imagenField) {
+        if (imagenField && typeof imagenField === 'string' && imagenField.trim() !== '') {
+            return GITHUB_RAW_BASE + imagenField.trim();
+        }
+        return DEFAULT_IMAGE;
+    }
+
+    // ======================== DOM ELEMENTS ========================
     const modalDetail = document.getElementById('offerModal');
     const modalForm   = document.getElementById('formModal');
     let selectedOffer = null;
@@ -283,20 +324,27 @@
         modalForm.style.display   = "flex";
     };
 
+    // Abre el modal de detalle con la información de la oferta seleccionada
     function openDetail(offer) {
         selectedOffer = offer;
-        const imgSrc = `https://placehold.co/400x300/ffffff/0a0e1a?text=${encodeURIComponent(offer.servicio_nombre || 'Oferta')}`;
-
-        document.getElementById('modalImg').src       = imgSrc;
+        const imgUrl = getImageUrl(offer.imagen);
+        document.getElementById('modalImg').src = imgUrl;
         document.getElementById('modalBadge').innerText = offer.servicio_nombre || 'SERVICIO';
-        document.getElementById('modalTitle').innerText = offer.oferta_texto    || 'Oferta Especial';
-        document.getElementById('modalPrice').innerHTML = (offer.precio && offer.precio !== '0')
-            ? `$${parseInt(offer.precio).toLocaleString('es-AR')}`
-            : 'Consultar';
+        document.getElementById('modalTitle').innerText = offer.oferta_texto || 'Oferta Especial';
+        
+        let priceDisplay = 'Consultar';
+        if (offer.precio && offer.precio !== '0') {
+            const numericPrice = parseFloat(offer.precio);
+            if (!isNaN(numericPrice)) {
+                priceDisplay = `$${numericPrice.toLocaleString('es-AR')}`;
+            }
+        }
+        document.getElementById('modalPrice').innerHTML = priceDisplay;
+        
         document.getElementById('modalDate').innerHTML = offer.fecha_expiracion
             ? `📅 Expira: ${new Date(offer.fecha_expiracion).toLocaleDateString('es-AR')}`
             : '📅 Vigencia indefinida';
-
+        
         modalDetail.style.display = "flex";
     }
 
@@ -348,25 +396,52 @@
                 ? offer.oferta_texto.substring(0, 50) + '…'
                 : (offer.oferta_texto || 'Sin descripción');
 
+            // Obtener URL de la imagen (usando el campo 'imagen' de la BD)
+            const imgUrl = getImageUrl(offer.imagen);
+
+            let priceHtml = '<div class="offer-price">Consultar</div>';
+            if (offer.precio && offer.precio !== '0') {
+                const numericPrice = parseFloat(offer.precio);
+                if (!isNaN(numericPrice)) {
+                    priceHtml = `<div class="offer-price">$${numericPrice.toLocaleString('es-AR')}</div>`;
+                }
+            }
+
             card.innerHTML = `
                 <div class="offer-img">
-                    <img src="https://placehold.co/300x200/ffffff/0a0e1a?text=${encodeURIComponent(offer.servicio_nombre || 'PC')}"
-                         onerror="this.src='${FALLBACK_IMG}';">
+                    <img src="${imgUrl}" onerror="this.src='${DEFAULT_IMAGE}';">
                 </div>
                 <div class="offer-content">
-                    <span class="badge">${offer.servicio_nombre || 'SERVICIO'}</span>
-                    <h3 class="offer-title">${shortTitle}</h3>
-                    ${offer.precio && offer.precio !== '0'
-                        ? `<div class="offer-price">$${parseInt(offer.precio).toLocaleString('es-AR')}</div>`
-                        : '<div class="offer-price">Consultar</div>'}
+                    <span class="badge">${escapeHtml(offer.servicio_nombre || 'SERVICIO')}</span>
+                    <h3 class="offer-title">${escapeHtml(shortTitle)}</h3>
+                    ${priceHtml}
                 </div>`;
             container.appendChild(card);
+        });
+    }
+
+    // Simple escape para prevenir XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
         });
     }
 
     // ======================== ENVÍO DE PEDIDO ========================
     document.getElementById('orderForm').onsubmit = async (e) => {
         e.preventDefault();
+
+        // Validación de WhatsApp: al menos 8 dígitos
+        let rawWhatsapp = document.getElementById('whatsapp').value.trim();
+        const digitsOnly = rawWhatsapp.replace(/\D/g, '');
+        if (digitsOnly.length < 8) {
+            alert('⚠️ El número de WhatsApp debe tener al menos 8 dígitos. Podés incluir el código de país (54 o 549).');
+            return;
+        }
 
         const submitBtn  = e.target.querySelector('button[type="submit"]');
         const origHTML   = submitBtn.innerHTML;
@@ -376,21 +451,20 @@
         const payload = {
             nombre:        document.getElementById('nombre').value.trim(),
             apellido:      document.getElementById('apellido').value.trim(),
-            whatsapp:      document.getElementById('whatsapp').value.trim(),
+            whatsapp:      rawWhatsapp,
             direccion:     document.getElementById('direccion').value.trim(),
             localidad:     document.getElementById('localidad').value.trim(),
             provincia:     document.getElementById('provincia').value,
             codigo_postal: document.getElementById('codigo_postal').value.trim(),
             metodo_pago:   document.getElementById('metodo_pago').value,
-            oferta_id:     selectedOffer?.id    || null,
+            oferta_id:     selectedOffer?.id || null,
             oferta_texto:  selectedOffer?.oferta_texto || ''
         };
 
-        // Validación WhatsApp: 9 o 10 dígitos, sin 0 ni 15
-        if (!/^\d{9,10}$/.test(payload.whatsapp)) {
-            alert('⚠️ El WhatsApp debe tener entre 9 y 10 dígitos, sin el 0 y sin el 15.');
+        if (!payload.nombre || !payload.apellido || !payload.direccion || !payload.localidad || !payload.codigo_postal) {
+            alert('❌ Por favor completá todos los campos obligatorios.');
             submitBtn.innerHTML = origHTML;
-            submitBtn.disabled  = false;
+            submitBtn.disabled = false;
             return;
         }
 
@@ -406,9 +480,12 @@
                 modalForm.style.display = "none";
                 document.getElementById('orderForm').reset();
             } else {
-                const errorText = await res.text();
-                console.error('Error del servidor:', errorText);
-                alert(`❌ Error al guardar el pedido. El servidor respondió: ${res.status}\n\nDetalles en consola (F12).`);
+                let errorMsg = `Error ${res.status}`;
+                try {
+                    const errorData = await res.json();
+                    errorMsg = errorData.mensaje || errorData.error || errorMsg;
+                } catch (err) { /* ignore */ }
+                alert(`❌ No se pudo guardar el pedido: ${errorMsg}\n\nVerificá que el backend esté corriendo correctamente.`);
             }
         } catch (err) {
             console.error('Error de conexión:', err);
@@ -420,7 +497,7 @@
         }
     };
 
-    // Iniciar carga al abrir la página
+    // Iniciar la carga al abrir la página
     window.onload = fetchOfertas;
 </script>
 </body>
