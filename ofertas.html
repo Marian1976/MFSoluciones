@@ -238,51 +238,56 @@
     // ── API — valores definidos en config.js ──
 
     async function fetchOfertas() {
-        const loading   = document.getElementById('loading');
-        const container = document.getElementById('offers-container');
+    const loading   = document.getElementById('loading');
+    const container = document.getElementById('offers-container');
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/ofertas`);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
+    try {
+        // Añadimos el header 'ngrok-skip-browser-warning' para evitar el error del token '<'
+        const response = await fetch(`${API_BASE_URL}/ofertas`, {
+            method: 'GET',
+            headers: {
+                'ngrok-skip-browser-warning': 'true',
+                'Accept': 'application/json'
+            }
+        });
 
-            loading.style.display = 'none';
-            container.innerHTML = '';
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
 
-            data.forEach(item => {
-                const imgSrc = item.imagen
-                    ? ASSETS_URL + item.imagen
-                    : FALLBACK_IMG;
+        loading.style.display = 'none';
+        container.innerHTML = '';
 
-                const card = document.createElement('div');
-                card.className = 'offer-card';
-                card.innerHTML = `
-                    <div class="offer-img">
-                        <img
-                            src="${imgSrc}"
-                            alt="Imagen Oferta"
-                            loading="eager"
-                            onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
-                        >
-                    </div>
-                    <div class="offer-content">
-                        <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
-                        <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
-                        <div class="offer-price">$${item.precio || '0.00'}</div>
-                        <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
-                            Expira: ${item.fecha_expiracion || 'Consultar'}
-                        </p>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-        } catch (error) {
-            console.error('Error al cargar ofertas:', error);
-            loading.className = 'error';
-            loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar con la API.<br><small>${error.message}</small>`;
+        if (data.length === 0) {
+            container.innerHTML = '<p class="loading">No hay ofertas activas en este momento.</p>';
+            return;
         }
+
+        data.forEach(item => {
+            const imgSrc = item.imagen ? ASSETS_URL + item.imagen : FALLBACK_IMG;
+            const card = document.createElement('div');
+            card.className = 'offer-card';
+            card.innerHTML = `
+                <div class="offer-img">
+                    <img src="${imgSrc}" alt="Oferta" onerror="this.src='${FALLBACK_IMG}';">
+                </div>
+                <div class="offer-content">
+                    <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
+                    <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
+                    <div class="offer-price">$${item.precio || '0.00'}</div>
+                    <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
+                        Expira: ${item.fecha_expiracion || 'Consultar'}
+                    </p>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error al cargar ofertas:', error);
+        loading.className = 'error';
+        loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar con la API.<br><small>${error.message}</small>`;
     }
+}
 
     window.onload = fetchOfertas;
 </script>
