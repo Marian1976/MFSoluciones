@@ -6,59 +6,19 @@
     <title>MF Soluciones | Ofertas</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    /* Estilos mejorados para el botón de compra */
-.btn-comprar {
-    width: 100%;
-    background: linear-gradient(135deg, var(--accent) 0%, #00a3ff 100%);
-    color: var(--bg);
-    border: none;
-    padding: 14px;
-    border-radius: 10px;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 14px;
-    text-transform: uppercase;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
-    margin-top: 15px;
-}
-
-.btn-comprar:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
-    filter: brightness(1.1);
-}
-
-.btn-comprar:active {
-    transform: translateY(0) scale(0.98);
-}
-
-.btn-comprar i {
-    transition: transform 0.3s ease;
-}
-
-.btn-comprar:hover i {
-    transform: translateX(5px);
-}
-
-/* Efecto de brillo sutil */
-.btn-comprar::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: 0.5s;
-}
-
-.btn-comprar:hover::after {
-    left: 100%;
-}
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --surface: #111827;
+            --surface2: #1a2236;
+            --border: #1e2d45;
+            --accent: #00d4ff;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --green: #10b981;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --font: 'IBM Plex Sans', sans-serif;
+        }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -123,6 +83,7 @@
             border-radius: 12px;
             overflow: hidden;
             transition: transform 0.2s;
+            position: relative;
         }
 
         .offer-card:hover { transform: translateY(-5px); border-color: var(--accent); }
@@ -145,9 +106,10 @@
 
         .offer-content { padding: 20px; }
         .offer-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; min-height: 40px; }
+        
         .offer-price {
             font-family: var(--font-mono);
-            font-size: 20px;
+            font-size: 22px;
             color: var(--green);
             font-weight: 700;
             margin-bottom: 12px;
@@ -164,68 +126,63 @@
             margin-bottom: 8px;
         }
 
+        /* ── BOTÓN DE COMPRA MEJORADO ── */
+        .btn-comprar {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent) 0%, #00a3ff 100%);
+            color: var(--bg);
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-comprar:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-comprar i { transition: transform 0.3s ease; }
+        .btn-comprar:hover i { transform: translateX(5px); }
+
+        .btn-comprar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .btn-comprar:hover::after { left: 100%; }
+
         .loading { text-align: center; padding: 50px; color: var(--muted); }
         .error { text-align: center; padding: 50px; color: #f87171; font-family: var(--font-mono); font-size: 13px; }
 
-        /* ── HAMBURGUESA (solo móvil) ── */
-        .hamburger {
-            display: none;
-            position: fixed;
-            top: 14px;
-            left: 14px;
-            z-index: 200;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 13px;
-            cursor: pointer;
-            color: var(--accent);
-            font-size: 18px;
-            line-height: 1;
-        }
-
-        /* ── OVERLAY ── */
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 90;
-        }
-        .overlay.active { display: block; }
-
         /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
-            .hamburger { display: block; }
-
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.28s ease;
-            }
-            .sidebar.open { transform: translateX(0); }
-
-            .main {
-                margin-left: 0;
-                padding: 70px 16px 32px;
-            }
-
-            .offers-grid {
-                grid-template-columns: 1fr;
-            }
+            .sidebar { transform: translateX(-100%); }
+            .main { margin-left: 0; padding: 20px; }
+            .offers-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<!-- Botón hamburguesa -->
-<button class="hamburger" id="menuBtn" aria-label="Abrir menú">
-    <i class="fas fa-bars" id="menuIcon"></i>
-</button>
-
-<!-- Overlay oscuro -->
-<div class="overlay" id="overlay"></div>
-
-<div class="sidebar" id="sidebar">
+<div class="sidebar">
     <div class="logo">
         <h1>MF<span>Soluciones</span></h1>
     </div>
@@ -251,81 +208,45 @@
 
 <script src="config.js"></script>
 <script>
-    // ── Menú hamburguesa ──
-    const menuBtn  = document.getElementById('menuBtn');
-    const sidebar  = document.getElementById('sidebar');
-    const overlay  = document.getElementById('overlay');
-    const menuIcon = document.getElementById('menuIcon');
-
-    function toggleMenu() {
-        const open = sidebar.classList.toggle('open');
-        overlay.classList.toggle('active', open);
-        menuIcon.className = open ? 'fas fa-times' : 'fas fa-bars';
-    }
-
-    menuBtn.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', toggleMenu);
-
-    document.querySelectorAll('.nav-item').forEach(link => {
-        link.addEventListener('click', () => {
-            if (sidebar.classList.contains('open')) toggleMenu();
-        });
-    });
-
-    // ── API Corregida para saltar advertencia de Ngrok ──
     async function fetchOfertas() {
-        const loading   = document.getElementById('loading');
+        const loading = document.getElementById('loading');
         const container = document.getElementById('offers-container');
 
         try {
-            // Se agrega el header 'ngrok-skip-browser-warning' para forzar la respuesta JSON
+            // Se usa el encabezado para saltar el aviso de ngrok
             const response = await fetch(`${API_BASE_URL}/ofertas`, {
-                method: 'GET',
-                headers: {
-                    'ngrok-skip-browser-warning': 'true',
-                    'Accept': 'application/json'
-                }
+                headers: { 'ngrok-skip-browser-warning': 'true' }
             });
-
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
 
             loading.style.display = 'none';
             container.innerHTML = '';
 
-            if (data.length === 0) {
-                container.innerHTML = '<p class="loading">No hay ofertas activas actualmente.</p>';
-                return;
-            }
-
             data.forEach(item => {
-                const imgSrc = item.nimagen
-                    ? ASSETS_URL + item.nimagen
+                // Se usa 'nimagen' que es la columna nueva en la DB
+                const imgSrc = item.nimagen 
+                    ? ASSETS_URL + item.nimagen 
                     : FALLBACK_IMG;
 
                 const card = document.createElement('div');
                 card.className = 'offer-card';
                 card.innerHTML = `
                     <div class="offer-img">
-                        <img
-                            src="${imgSrc}"
-                            alt="Imagen Oferta"
-                            loading="eager"
-                            onerror="this.onerror=null; this.src='${FALLBACK_IMG}';"
-                        >
+                        <img src="${imgSrc}" alt="${item.servicio_nombre}" onerror="this.src='${FALLBACK_IMG}';">
                     </div>
                     <div class="offer-content">
                         <span class="badge">${item.servicio_nombre || 'SERVICIO'}</span>
-                        <h3 class="offer-title">${item.offer_texto || 'Sin descripción'}</h3>
+                        <h3 class="offer-title">${item.oferta_texto || 'Sin descripción'}</h3>
                         <div class="offer-price">$${item.precio || '0.00'}</div>
                         <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
                             Expira: ${item.fecha_expiracion || 'Consultar'}
-                        <button class="btn-comprar" onclick="iniciarCompra(${item.id}, '${item.servicio_nombre}',                    ${item.precio})">
-                        <span>Comprar Ahora</span>
-                        <i class="fas fa-shopping-cart"></i>
-                        </button>
                         </p>
+                        <button class="btn-comprar" onclick="iniciarCompra(${item.id}, '${item.servicio_nombre}', ${item.precio})">
+                            <span>Comprar Ahora</span>
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -336,6 +257,23 @@
             loading.className = 'error';
             loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar con la API.<br><small>${error.message}</small>`;
         }
+    }
+
+    function iniciarCompra(id, nombre, precio) {
+        const mensaje = `Hola Mariano! Me interesa el servicio: *${nombre}* ($${precio}). Ref: #${id}`;
+        const whatsappUrl = `https://wa.me/543424123456?text=${encodeURIComponent(mensaje)}`; // Cambia por tu número real
+        
+        const btn = event.currentTarget;
+        const originalContent = btn.innerHTML;
+        
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        btn.style.opacity = '0.7';
+        
+        setTimeout(() => {
+            window.open(whatsappUrl, '_blank');
+            btn.innerHTML = originalContent;
+            btn.style.opacity = '1';
+        }, 800);
     }
 
     window.onload = fetchOfertas;
