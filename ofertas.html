@@ -6,19 +6,59 @@
     <title>MF Soluciones | Ofertas</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --bg: #0a0e1a;
-            --surface: #111827;
-            --surface2: #1a2236;
-            --border: #1e2d45;
-            --accent: #00d4ff;
-            --text: #e2e8f0;
-            --muted: #64748b;
-            --green: #10b981;
-            --font-mono: 'IBM Plex Mono', monospace;
-            --font: 'IBM Plex Sans', sans-serif;
-        }
+    /* Estilos mejorados para el botón de compra */
+.btn-comprar {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent) 0%, #00a3ff 100%);
+    color: var(--bg);
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+    margin-top: 15px;
+}
+
+.btn-comprar:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+    filter: brightness(1.1);
+}
+
+.btn-comprar:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-comprar i {
+    transition: transform 0.3s ease;
+}
+
+.btn-comprar:hover i {
+    transform: translateX(5px);
+}
+
+/* Efecto de brillo sutil */
+.btn-comprar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+}
+
+.btn-comprar:hover::after {
+    left: 100%;
+}
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -281,6 +321,10 @@
                         <div class="offer-price">$${item.precio || '0.00'}</div>
                         <p style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono';">
                             Expira: ${item.fecha_expiracion || 'Consultar'}
+                        <button class="btn-comprar" onclick="iniciarCompra(${item.id}, '${item.servicio_nombre}',                    ${item.precio})">
+                        <span>Comprar Ahora</span>
+                        <i class="fas fa-shopping-cart"></i>
+                        </button>
                         </p>
                     </div>
                 `;
