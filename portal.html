@@ -173,18 +173,26 @@ document.getElementById('userName').textContent = nombreUsuario.split(' ')[0];
 document.getElementById('avatarInitial').textContent = nombreUsuario.charAt(0);
 
 // Función de Fetch Mejorada
+// Función de Fetch Mejorada (Con bypass para ngrok)
 async function apiFetch(path, opts = {}) {
     try {
         const response = await fetch(`${API}${path}`, {
             method: opts.method || 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                // ESTA LÍNEA ES LA CLAVE: salta la advertencia de ngrok
+                'ngrok-skip-browser-warning': 'true' 
+            },
             body: opts.body ? JSON.stringify(opts.body) : null
         });
+        
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
-        return await response.json();
+        
+        const data = await response.json();
+        return data;
     } catch (err) {
         showToast("Error de conexión con el túnel", "error");
-        console.error(err);
+        console.error("Error detallado:", err);
         return null;
     }
 }
