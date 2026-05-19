@@ -225,10 +225,9 @@
             container.innerHTML = '';
 
             data.forEach(item => {
-                // Se usa 'nimagen' que es la columna nueva en la DB
-                const imgSrc = item.imagen 
-                    ? ASSETS_URL + item.imagen 
-                    : FALLBACK_IMG;
+              const imgSrc = item.imagen   // ← sin ASSETS_URL
+              ? item.imagen 
+              : FALLBACK_IMG;
 
                 const card = document.createElement('div');
                 card.className = 'offer-card';
