@@ -3,7 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MF Soluciones | Tecnología y Automatización</title>
+    <title>MF Soluciones | Servicio Técnico de PC y Automatización en Santa Fe</title>
+    
+    <!-- SEO Orgánico Básico -->
+    <meta name="description" content="Soporte técnico informático avanzado en Santa Fe. Reparación de PC, armado de hardware especializado para IA local y automatización de procesos con n8n y Python.">
+    <meta name="keywords" content="servicio tecnico pc santa fe, servicio tecnico informatico santa fe, armar pc ia local santa fe, automatizacion n8n argentina, mf soluciones, reparacion de computadoras santa fe">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.mfsoluciones.com.ar">
+
+    <!-- Open Graph (Previsualización Premium en WhatsApp y Redes Sociales) -->
+    <meta property="og:title" content="MF Soluciones | Servicio Técnico de PC y Automatización">
+    <meta property="og:description" content="Soporte técnico de hardware premium, estaciones de trabajo para IA y optimización de flujos con n8n en Santa Fe, Argentina.">
+    <meta property="og:url" content="https://www.mfsoluciones.com.ar">
+    <meta property="og:type" content="website">
+
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -50,7 +63,7 @@
             align-items: center;
         }
 
-        .nav-logo h1 {
+        .nav-logo .logo-text {
             font-size: 22px;
             font-weight: 700;
             letter-spacing: -0.5px;
@@ -58,7 +71,7 @@
             color: var(--accent);
         }
 
-        .nav-logo h1 span {
+        .nav-logo .logo-text span {
             color: var(--text);
         }
 
@@ -113,7 +126,7 @@
             margin: 0 auto;
         }
 
-        .hero h2 {
+        .hero h1 {
             font-size: 42px;
             font-weight: 800;
             line-height: 1.2;
@@ -269,7 +282,6 @@
             display: block;
         }
 
-        /* Marcador visual de espacio disponible */
         .offer-img.placeholder-img {
             background: var(--surface-card);
             font-family: var(--font-mono);
@@ -459,7 +471,7 @@
 
         @media (max-width: 768px) {
             .nav-links { display: none; }
-            .hero h2 { font-size: 32px; }
+            .hero h1 { font-size: 32px; }
             footer { padding: 40px 16px 20px 16px; }
             .footer-container { grid-template-columns: 1fr; gap: 30px; }
         }
@@ -469,7 +481,8 @@
 
     <nav class="navbar">
         <div class="nav-logo">
-            <h1>MF<span>Soluciones</span></h1>
+            <!-- Cambiado de H1 a div con clase para conservar jerarquía SEO -->
+            <div class="logo-text">MF<span>Soluciones</span></div>
         </div>
         <div class="nav-links">
             <a href="#inicio">Inicio</a>
@@ -484,7 +497,8 @@
 
     <header id="inicio" class="hero">
         <div class="hero-container">
-            <h2>Soluciones Tecnológicas de Próxima Generación</h2>
+            <!-- Convertido en el H1 UNICO de la web para posicionamiento local con palabras clave -->
+            <h1>Servicio Técnico de PC y Automatización en Santa Fe</h1>
             <p>Especialistas en Soporte de Hardware, Inteligencia Artificial Local y Automatización de Procesos para potenciar tu rendimiento y negocio.</p>
             <a href="https://wa.me/5493424787347?text=Hola%20MF%20Soluciones!%20Vi%20tu%20web%20y%20quería%20hacerte%20una%20consulta." 
                target="_blank" class="btn-cta">
@@ -600,7 +614,6 @@
                 loading.style.display = 'none';
                 container.innerHTML = '';
 
-                // 1. Renderizar ofertas reales de la base de datos
                 data.forEach(item => {
                     const imgSrc = item.imagen ? item.imagen : FALLBACK_IMG;
                     const card = document.createElement('div');
@@ -623,7 +636,6 @@
                     container.appendChild(card);
                 });
 
-                // 2. Rellenar dinámicamente los slots restantes hasta completar 8
                 const slotsRestantes = TOTAL_SLOTS_DESEADOS - data.length;
                 for (let i = 1; i <= slotsRestantes; i++) {
                     const emptyCard = document.createElement('div');
