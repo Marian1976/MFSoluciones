@@ -466,7 +466,33 @@
             color: #475569;
             font-size: 13px;
         }
+            /* Botón Flotante WhatsApp */
+        .whatsapp-float {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        background: #25d366;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font);
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        z-index: 2000;
+        transition: 0.3s;
+        }
 
+        .whatsapp-float:hover {
+        transform: scale(1.05);
+        background: #128c7e;
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+        }
+
+        .whatsapp-float i { font-size: 24px; }
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hero h1 { font-size: 32px; }
@@ -769,5 +795,11 @@
 
         window.onload = fetchOfertas;
     </script>
+    <a href="https://wa.me/5493424787347?text=Hola!%20Quisiera%20consultar%20por%20los%20servicios%20de%20MF%20Soluciones" 
+   target="_blank" 
+   class="whatsapp-float">
+    <i class="fab fa-whatsapp"></i>
+    <span>¿Necesitás ayuda?</span>
+</a>
 </body>
 </html>
