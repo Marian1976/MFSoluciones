@@ -659,14 +659,20 @@
                         </div>
                     `;
                     container.appendChild(emptyCard);
-                }
+                } catch (error) {
+                    console.error('Error al cargar ofertas:', error);
+                    loading.className = 'error';
 
-            } catch (error) {
-                console.error('Error al cargar ofertas:', error);
-                loading.className = 'error';
-                loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error al conectar con la API local.<br><small>${error.message}</small>`;
-            }
-        }
+                // Ahora esto está dentro de las llaves del catch
+                loading.innerHTML = `
+                        <div style="margin-top: 20px;">
+                        <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1781021354/samples/radial_02.png" 
+                              alt="Error de conexión" 
+                              style="max-width: 300px; opacity: 0.8;">
+                        <p style="margin-top: 10px;">No se pudieron cargar las ofertas en este momento.</p>
+                        </div>
+                    `;
+                } // Aquí cierras el bloque catch
 
         function iniciarCompra(id, nombre, precio) {
             const mensaje = `Hola Mariano! Me interesa el servicio: *${nombre}* ($${precio}). Ref: #${id}`;
