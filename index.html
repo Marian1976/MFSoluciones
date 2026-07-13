@@ -550,7 +550,23 @@
 
         <div class="offers-grid" id="offers-container"></div>
     </section>
+    
+    <section id="ofertas" style="border-top: 1px solid var(--border);">
+    <div class="section-header">
+        <h3>Catálogo de Ofertas</h3>
+    </div>
 
+    <!-- Esta sección es para la carga dinámica de la API -->
+    <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Conectando...
+    </div>
+    <div class="offers-grid" id="offers-container"></div>
+
+    <!-- TUS 3 OFERTAS ESTÁTICAS (Cámbialas aquí directamente) -->
+    <div class="offers-grid" style="margin-top: 40px;">
+        <!-- Tarjeta 1, 2 y 3 aquí siguiendo tu estructura -->
+    </div>
+    </section>
     <footer id="contacto">
         <div class="footer-container">
             <div class="footer-info">
@@ -595,45 +611,7 @@
             <p>&copy; 2026 MF Soluciones. Todos los derechos reservados. Diseñado bajo estándares de alta velocidad y estética premium dark.</p>
         </div>
     </footer>
-    
-    // secion ofertas tabla tres cuadros
 
-    <section id="ofertas">
-    <div class="offers-grid-3">
-        <div class="offer-card">
-            <div class="offer-img">
-                <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1779275065/cld-sample-5.png" alt="Servicio 1">
-            </div>
-            <div class="offer-content">
-                <h4>Optimización PC</h4>
-                <p>Mejora de rendimiento para entornos de trabajo exigentes.</p>
-                <button class="btn-comprar">Consultar</button>
-            </div>
-        </div>
-
-        <div class="offer-card">
-            <div class="offer-img">
-                <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1779217470/samples/radial.png" alt="Servicio 2">
-            </div>
-            <div class="offer-content">
-                <h4>Automatización n8n</h4>
-                <p>Flujos de trabajo autónomos para optimizar tu tiempo.</p>
-                <button class="btn-comprar">Consultar</button>
-            </div>
-        </div>
-
-        <div class="offer-card">
-            <div class="offer-img">
-                <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1779275035/main-sample.png" alt="Servicio 3">
-            </div>
-            <div class="offer-content">
-                <h4>Armado IA Local</h4>
-                <p>Estaciones de trabajo de alto rendimiento para LLMs.</p>
-                <button class="btn-comprar">Consultar</button>
-            </div>
-        </div>
-    </div>
-    </section>
     <script src="config.js"></script>
     <script>
         const TOTAL_SLOTS_DESEADOS = 6;
@@ -697,21 +675,21 @@
                         </div>
                     `;
                     container.appendChild(emptyCard);
-                } catch (error) {
-                    console.error('Error al cargar ofertas:', error);
-                    loading.className = 'error';
+                }
 
-                // Ahora esto está dentro de las llaves del catch
-                loading.innerHTML = `
-                        <div style="margin-top: 20px;">
-                        <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1781021354/samples/radial_02.png" 
-                              alt="Error de conexión" 
-                              style="max-width: 300px; opacity: 0.8;">
-                        <p style="margin-top: 10px;">No se pudieron cargar las ofertas en este momento.</p>
-                        </div>
-                    `;
-                } // Aquí cierras el bloque catch
-
+            } 
+            // 1. Mantenemos el catch limpio y funcional con la imagen de error que querías
+                 } catch (error) {
+    			console.error('Error al cargar ofertas:', error);
+    			   loading.className = 'error';
+    			   loading.innerHTML = `
+        	   <div style="margin-top: 20px;">
+      		      <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1781021354/samples/radial_02.png" 
+             	      alt="Error de conexión" style="max-width: 300px; opacity: 0.8;">
+          	      <p>No se pudieron cargar las ofertas en este momento.</p>
+      		   </div>
+  		  `;
+		}
         function iniciarCompra(id, nombre, precio) {
             const mensaje = `Hola Mariano! Me interesa el servicio: *${nombre}* ($${precio}). Ref: #${id}`;
             const whatsappUrl = `https://wa.me/5493424787347?text=${encodeURIComponent(mensaje)}`;
