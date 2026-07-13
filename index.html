@@ -665,12 +665,13 @@
     console.error('Error al cargar ofertas:', error);
     loading.className = 'error';
     loading.innerHTML = `
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
         <div style="margin-top: 20px;">
             <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1781021354/samples/radial_02.png" 
                  alt="Error de conexión" style="max-width: 300px; opacity: 0.8;">
             <p>.</p>
-        /*  </div>  */
-        /*  <div style="margin-top: 20px;"> */
+         </div>  
+          <div style="margin-top: 20px;"> 
             <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1779217470/samples/radial.png" 
                  alt="Error de conexión" style="max-width: 300px; opacity: 0.8;">
             <p>..</p>
@@ -679,6 +680,7 @@
             <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1779275035/main-sample.png" 
                  alt="Error de conexión" style="max-width: 300px; opacity: 0.8;">
             <p>...</p>
+        </div>
         </div>
     `;
 }
