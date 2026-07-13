@@ -711,121 +711,95 @@
             <p style="margin-top: 10px; color: var(--text);">Combo de Actualización</p>
             </div>
     
-        <section id="banner-servicios" style="margin-top: 20px; overflow: hidden; border-radius: 14px;">
-    <div style="
-        position: relative;
+       <section id="banner-servicios" style="padding: 40px 24px; margin-top: 20px;">
+    <div class="info-banner" style="
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px;
         display: flex;
-        min-height: 220px;
-        background: linear-gradient(135deg, #0a1f3d 0%, #0d2e52 60%, #123a5e 100%);
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+        flex-wrap: wrap;
+        position: relative;
         overflow: hidden;
-    ">
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 0 0 rgba(0, 212, 255, 0);
+    "
+    onmouseover="this.style.borderColor='var(--accent)'; this.style.boxShadow='0 0 30px rgba(0, 212, 255, 0.12)';"
+    onmouseout="this.style.borderColor='var(--border)'; this.style.boxShadow='0 0 0 rgba(0, 212, 255, 0)';">
 
-        <!-- Patrón de circuitos de fondo (SVG inline, sutil) -->
-        <svg style="position:absolute; top:0; left:0; width:60%; height:100%; opacity:0.15; pointer-events:none;"
-             viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 35 H180 V75 H320 V35 H600" stroke="#4dd8ff" stroke-width="2" fill="none"/>
-            <path d="M0 120 H120 V160 H260 V200 H600" stroke="#4dd8ff" stroke-width="2" fill="none"/>
-            <path d="M100 0 V35" stroke="#4dd8ff" stroke-width="2"/>
-            <path d="M320 75 V120" stroke="#4dd8ff" stroke-width="2"/>
-            <path d="M260 160 V200" stroke="#4dd8ff" stroke-width="2"/>
-            <circle cx="180" cy="35" r="3" fill="#4dd8ff"/>
-            <circle cx="320" cy="75" r="3" fill="#4dd8ff"/>
-            <circle cx="120" cy="160" r="3" fill="#4dd8ff"/>
-            <circle cx="260" cy="200" r="3" fill="#4dd8ff"/>
-        </svg>
-
-        <!-- Columna izquierda: texto -->
+        <!-- Glow decorativo de fondo -->
         <div style="
-            position: relative;
-            z-index: 2;
-            flex: 1.4;
-            min-width: 280px;
-            padding: 22px 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        ">
-            <h2 style="font-size: 26px; font-weight: 800; margin: 0 0 4px 0; line-height: 1.1; letter-spacing: -0.5px;">
-                <span style="color: #ffffff;">MF</span><span style="color: #f7c948; text-shadow: 0 0 16px rgba(247,201,72,0.4);">Soluciones</span>
-            </h2>
-            <p style="font-size: 13px; color: #d7e6f5; margin: 0 0 14px 0; font-weight: 500;">
-                Servicio Técnico de PC y Laptops
-            </p>
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        "></div>
 
-            <ul style="list-style: none; padding: 0; margin: 0 0 14px 0; display: flex; flex-direction: column; gap: 8px;">
-                <li style="display: flex; align-items: center; gap: 10px; color: #ffffff; font-size: 13px; font-weight: 600;">
-                    <span style="font-size: 15px; color: #4dd8ff;"><i class="fas fa-tools"></i></span>
-                    Reparación de Hardware <span style="font-weight: 400; color: #b7c9dc;">(PC/Notebooks)</span>
+        <div style="flex: 1; min-width: 300px; position: relative; z-index: 1;">
+            <h2 style="font-size: 28px; margin-bottom: 20px; color: var(--accent); line-height: 1.3;">
+                MF Soluciones: Servicio Técnico Integral
+            </h2>
+            <ul style="list-style: none; color: var(--text-muted); font-size: 16px; display: flex; flex-direction: column; gap: 14px;">
+                <li style="display: flex; align-items: center; gap: 12px;">
+                    <span style="
+                        display: inline-flex; align-items: center; justify-content: center;
+                        width: 32px; height: 32px; border-radius: 8px;
+                        background: rgba(0, 212, 255, 0.1); color: var(--accent); flex-shrink: 0;
+                    "><i class="fas fa-tools"></i></span>
+                    Reparación de Hardware (PC/Notebooks)
                 </li>
-                <li style="display: flex; align-items: center; gap: 10px; color: #ffffff; font-size: 13px; font-weight: 600;">
-                    <span style="font-size: 15px; color: #4dd8ff;"><i class="fas fa-rocket"></i></span>
-                    Optimización de Sistema <span style="font-weight: 400; color: #b7c9dc;">(Adiós lentitud)</span>
+                <li style="display: flex; align-items: center; gap: 12px;">
+                    <span style="
+                        display: inline-flex; align-items: center; justify-content: center;
+                        width: 32px; height: 32px; border-radius: 8px;
+                        background: rgba(0, 212, 255, 0.1); color: var(--accent); flex-shrink: 0;
+                    "><i class="fas fa-rocket"></i></span>
+                    Optimización de Sistema (Adiós lentitud)
                 </li>
-                <li style="display: flex; align-items: center; gap: 10px; color: #ffffff; font-size: 13px; font-weight: 600;">
-                    <span style="font-size: 15px; color: #4dd8ff;"><i class="fas fa-virus-slash"></i></span>
+                <li style="display: flex; align-items: center; gap: 12px;">
+                    <span style="
+                        display: inline-flex; align-items: center; justify-content: center;
+                        width: 32px; height: 32px; border-radius: 8px;
+                        background: rgba(0, 212, 255, 0.1); color: var(--accent); flex-shrink: 0;
+                    "><i class="fas fa-virus-slash"></i></span>
                     Eliminación de Virus y Malware
                 </li>
-                <li style="display: flex; align-items: center; gap: 10px; color: #ffffff; font-size: 13px; font-weight: 600;">
-                    <span style="font-size: 15px; color: #4dd8ff;"><i class="fas fa-save"></i></span>
+                <li style="display: flex; align-items: center; gap: 12px;">
+                    <span style="
+                        display: inline-flex; align-items: center; justify-content: center;
+                        width: 32px; height: 32px; border-radius: 8px;
+                        background: rgba(0, 212, 255, 0.1); color: var(--accent); flex-shrink: 0;
+                    "><i class="fas fa-save"></i></span>
                     Recuperación de Datos
                 </li>
             </ul>
-
-            <a href="https://wa.me/5493424787347?text=Hola%20MF%20Soluciones!%20Vi%20tu%20web%20y%20quiero%20consultar%20por%20servicio%20técnico."
-               target="_blank"
-               style="
-                   display: inline-flex;
-                   align-items: center;
-                   gap: 8px;
-                   width: fit-content;
-                   background: #f7c948;
-                   color: #0a1f3d;
-                   font-weight: 700;
-                   font-size: 13px;
-                   padding: 10px 18px;
-                   border-radius: 10px;
-                   text-decoration: none;
-                   box-shadow: 0 4px 14px rgba(247,201,72,0.25);
-                   transition: transform 0.2s ease, box-shadow 0.2s ease;
-               "
-               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(247,201,72,0.4)';"
-               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(247,201,72,0.25)';">
-                <i class="fab fa-whatsapp" style="font-size: 15px;"></i> ¡Consultanos por WhatsApp!
-            </a>
         </div>
 
-        <!-- Columna derecha: foto con corte diagonal -->
-        <div style="
-            position: relative;
-            flex: 0.85;
-            min-width: 180px;
-            clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
-        ">
-            <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1783966370/cld-sample-4.jpg"
-                 alt="PC gamer con placa de video MSI GeForce RTX en reparación - MF Soluciones"
-                 style="width: 100%; height: 100%; object-fit: cover; object-position: 30% 75%; display: block;" />
-            <div style="
-                position: absolute; top: 0; left: 0; width: 25%; height: 100%;
-                background: linear-gradient(90deg, rgba(10,31,61,0.5), transparent);
-                pointer-events: none;
-            "></div>
-            <div style="
-                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                clip-path: polygon(12% 0, 13.5% 0, 1.5% 100%, 0% 100%);
-                background: linear-gradient(180deg, #4dd8ff, #7be8ff);
-                pointer-events: none;
-            "></div>
+        <div style="text-align: center; min-width: 200px; position: relative; z-index: 1;">
+            <a href="https://wa.me/5493424787347?text=Hola%20MF%20Soluciones!%20Vi%20tu%20web%20y%20quiero%20consultar%20por%20servicio%20técnico."
+               target="_blank"
+               class="btn-cta"
+               style="
+                   padding: 16px 30px;
+                   font-size: 16px;
+                   display: inline-flex;
+                   align-items: center;
+                   gap: 10px;
+                   transition: transform 0.2s ease, box-shadow 0.2s ease;
+               "
+               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 212, 255, 0.3)';"
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                <i class="fab fa-whatsapp" style="font-size: 20px;"></i> ¡Consultanos por WhatsApp!
+            </a>
         </div>
     </div>
 </section>
-
-<style>
-@media (max-width: 768px) {
-    #banner-servicios > div { flex-direction: column; min-height: auto; }
-    #banner-servicios img { min-height: 160px; object-position: 30% 65% !important; }
-    #banner-servicios div[style*="clip-path"] { clip-path: none !important; }
-}
-</style>
         </div>
     `;
 }
