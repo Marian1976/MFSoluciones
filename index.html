@@ -67,8 +67,8 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            padding: 10px 28px;
-            min-height: 78px;
+            padding: 10px 24px;
+            min-height: 72px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -83,15 +83,21 @@
 
         .brand-logo {
             display: block;
-            width: 205px;
+            width: 190px;
             height: auto;
-            max-height: 62px;
+            max-height: 56px;
             object-fit: contain;
+        }
+
+        .nav-right-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .nav-links {
             display: flex;
-            gap: 24px;
+            gap: 22px;
             align-items: center;
         }
 
@@ -111,7 +117,7 @@
             background: var(--accent-soft);
             color: var(--accent);
             border: 1px solid #b8d9fa;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 9px;
             font-family: var(--font-mono);
             font-weight: 600;
@@ -143,7 +149,7 @@
             color: #394353;
             border: 1px solid #d7dee8;
             border-radius: 9px;
-            padding: 9px 15px;
+            padding: 8px 14px;
             font-size: 13px;
             font-family: var(--font-mono);
             cursor: pointer;
@@ -878,7 +884,7 @@
         /* ── TOAST ALERT ── */
         .toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 85px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: #0f172a;
@@ -897,6 +903,37 @@
 
         .toast.show {
             transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── BOTÓN FLOTANTE DE CARRITO PARA MÓVILES ── */
+        .mobile-cart-float {
+            position: fixed;
+            bottom: 25px;
+            left: 20px;
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 50px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font);
+            font-weight: 700;
+            font-size: 14px;
+            border: 3px solid #fff;
+            box-shadow: 0 8px 24px rgba(8, 119, 232, 0.35);
+            z-index: 2000;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .mobile-cart-float:active {
+            transform: scale(0.95);
+        }
+
+        .mobile-cart-float .cart-badge {
+            background: #fff;
+            color: var(--accent);
         }
 
         /* ── FOOTER ── */
@@ -1002,13 +1039,30 @@
         }
 
         @media (max-width: 768px) {
+            .navbar { padding: 8px 16px; }
+            .brand-logo { width: 145px; max-height: 44px; }
             .nav-links { display: none; }
+            .btn-admin { display: none; }
+            
+            .btn-cart-nav {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            .btn-cart-nav span.cart-text {
+                display: none; /* En celular dejamos solo el icono y el numero para que no ocupe espacio */
+            }
+
+            .mobile-cart-float {
+                display: flex; /* Aparece el acceso directo flotante en móvil */
+            }
+
             .hero-slider { min-height: 430px; }
             .slide { padding: 60px 18px 80px; }
             .slider-arrow { display: none; }
             .modal-body { grid-template-columns: 1fr; }
             .modal-media-frame { height: 210px; }
             .whatsapp-float { right: 14px; bottom: 14px; padding: 11px 15px; }
+            .mobile-cart-float { left: 14px; bottom: 14px; }
         }
     </style>
 </head>
@@ -1020,15 +1074,19 @@
                 <img src="https://res.cloudinary.com/dstqjchxx/image/upload/v1788458577/samples/woman-on-a-football-field.jpg" alt="MF Soluciones" class="brand-logo">
             </a>
         </div>
-        <div class="nav-links">
-            <a href="#inicio">Inicio</a>
-            <a href="#servicios">Servicios</a>
-            <a href="#ofertas">Catálogo</a>
-            <a href="#contacto">Contacto</a>
-            
-            <button class="btn-cart-nav" onclick="toggleCart()">
+        
+        <div class="nav-right-container">
+            <div class="nav-links">
+                <a href="#inicio">Inicio</a>
+                <a href="#servicios">Servicios</a>
+                <a href="#ofertas">Catálogo</a>
+                <a href="#contacto">Contacto</a>
+            </div>
+
+            <!-- Botón del Carrito en el Navbar: Siempre visible en PC y Móvil -->
+            <button class="btn-cart-nav" onclick="toggleCart()" aria-label="Ver carrito">
                 <i class="fas fa-shopping-cart"></i>
-                <span>Carrito</span>
+                <span class="cart-text">Carrito</span>
                 <span class="cart-badge" id="cart-counter">0</span>
             </button>
 
@@ -1181,6 +1239,13 @@
         </div>
     </div>
 
+    <!-- ── BOTÓN FLOTANTE DE CARRITO PARA MÓVILES (aparece cuando hay ítems) ── -->
+    <button class="mobile-cart-float" id="mobileCartFloat" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Ver Carrito</span>
+        <span class="cart-badge" id="mobile-cart-counter">0</span>
+    </button>
+
     <!-- ── TOAST ALERT ── -->
     <div class="toast" id="toastAlert">
         <i class="fas fa-check-circle" style="color: #22c55e;"></i>
@@ -1281,6 +1346,20 @@
             startAutoSlide();
         }
 
+        // ── CONVERSOR DE LINKS DE YOUTUBE A EMBED ──
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            if (url.includes('youtube.com/embed/')) return url;
+
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}?autoplay=1&rel=0`;
+            }
+            return url;
+        }
+
         // ── CATÁLOGO DE PRODUCTOS (CON DESCRIPCIÓN, SPECS Y VIDEO) ──
         const CATALOGO_PRODUCTOS = [
             {
@@ -1289,7 +1368,7 @@
                 categoria: "Software & Automatización",
                 precio: 89000,
                 imagen: "https://res.cloudinary.com/dstqjchxx/image/upload/v1791901251/samples/cld-sample-video.png",
-                video_url: "", // Podés cambiar por tu enlace embed de YouTube
+                video_url: "",
                 descripcion: "Plataforma integral desarrollada en Python y n8n para auditar tus flujos de caja personales o corporativos de forma automática.",
                 specs: [
                     "Sincronización automática de balances bancarios",
@@ -1402,13 +1481,27 @@
             const mediaBox = document.getElementById('modalMediaContainer');
             const mediaNote = document.getElementById('modalMediaNote');
             
-            if (item.video_url) {
-                mediaBox.innerHTML = `
-                    <iframe src="${item.video_url}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                `;
+            if (item.video_url && item.video_url.trim() !== "") {
+                const embedUrl = getYouTubeEmbedUrl(item.video_url);
+                if (embedUrl.includes('youtube.com/embed/')) {
+                    mediaBox.innerHTML = `
+                        <iframe 
+                            src="${embedUrl}" 
+                            title="${item.nombre}"
+                            style="width: 100%; height: 100%; border: none;"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>`;
+                } else {
+                    mediaBox.innerHTML = `
+                        <video controls autoplay muted style="width: 100%; height: 100%; object-fit: contain;">
+                            <source src="${embedUrl}" type="video/mp4">
+                            Tu navegador no soporta el formato de video.
+                        </video>`;
+                }
                 mediaNote.textContent = "Demostración en video disponible.";
             } else {
-                mediaBox.innerHTML = `<img src="${item.imagen || FALLBACK_IMG}" alt="${item.nombre}">`;
+                mediaBox.innerHTML = `<img src="${item.imagen || FALLBACK_IMG}" alt="${item.nombre}" style="width: 100%; height: 100%; object-fit: contain; padding: 15px;">`;
                 mediaNote.textContent = "Vista del producto.";
             }
 
@@ -1477,11 +1570,19 @@
 
         function updateCartUI() {
             const counter = document.getElementById('cart-counter');
+            const mobileCounter = document.getElementById('mobile-cart-counter');
+            const mobileFloatBtn = document.getElementById('mobileCartFloat');
             const itemsContainer = document.getElementById('cartItemsContainer');
             const totalEl = document.getElementById('cartTotalPrice');
 
             const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
             counter.textContent = totalItems;
+            if (mobileCounter) mobileCounter.textContent = totalItems;
+
+            // En móviles, mostrar el botón flotante solo si hay productos cargados
+            if (window.innerWidth <= 768 && mobileFloatBtn) {
+                mobileFloatBtn.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
 
             if (cart.length === 0) {
                 itemsContainer.innerHTML = `
@@ -1571,6 +1672,10 @@
         window.onload = function() {
             startAutoSlide();
             renderCatalogo();
+            updateCartUI();
+        };
+
+        window.onresize = function() {
             updateCartUI();
         };
     </script>
